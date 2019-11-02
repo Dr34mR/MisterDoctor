@@ -42,7 +42,6 @@ namespace SubstitutionBot.Helpers
                 else
                 {
                     origToken.Username = token.Username;
-                    origToken.AppClientId = token.AppClientId;
                     origToken.UserOAuthKey = token.UserOAuthKey;
 
                     collection.Update(origToken);
