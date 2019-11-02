@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Forms;
 using SubstitutionBot.Classes;
@@ -38,7 +37,7 @@ namespace SubstitutionBot.Forms
             ToggleSave();
         }
 
-        private void lnkGetOAuth_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private static void lnkGetOAuth_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("https://twitchapps.com/tmi/");
         }

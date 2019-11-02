@@ -22,7 +22,7 @@ namespace SubstitutionBot.Forms
             linkGithub.LinkClicked += linkGithub_LinkClicked;
         }
 
-        private void linkGithub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private static void linkGithub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("https://github.com/Dr34mR/TwitchSubstitutionBot");
         }

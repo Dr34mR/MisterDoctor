@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-
-namespace SubstitutionBot.Classes
+﻿namespace SubstitutionBot.Classes
 {
     internal class AppSettings
     {
