@@ -15,7 +15,9 @@ namespace SubstitutionBot
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Application.Run(new FormMain());
+            var form = new FormMain();
+            form.Setup();
+            Application.Run(form);
         }
     }
 }

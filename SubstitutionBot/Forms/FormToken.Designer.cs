@@ -34,7 +34,7 @@
             this.txtOAuth = new System.Windows.Forms.TextBox();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.btnGetToken = new System.Windows.Forms.Button();
+            this.lnkGetOAuth = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // lblUsername
@@ -49,7 +49,7 @@
             // lblOAuth
             // 
             this.lblOAuth.AutoSize = true;
-            this.lblOAuth.Location = new System.Drawing.Point(12, 58);
+            this.lblOAuth.Location = new System.Drawing.Point(12, 35);
             this.lblOAuth.Name = "lblOAuth";
             this.lblOAuth.Size = new System.Drawing.Size(112, 13);
             this.lblOAuth.TabIndex = 3;
@@ -57,23 +57,23 @@
             // 
             // txtUsername
             // 
-            this.txtUsername.Location = new System.Drawing.Point(15, 25);
+            this.txtUsername.Location = new System.Drawing.Point(130, 6);
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(335, 20);
+            this.txtUsername.Size = new System.Drawing.Size(220, 20);
             this.txtUsername.TabIndex = 4;
             // 
             // txtOAuth
             // 
             this.txtOAuth.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtOAuth.Location = new System.Drawing.Point(15, 74);
+            this.txtOAuth.Location = new System.Drawing.Point(130, 32);
             this.txtOAuth.Name = "txtOAuth";
-            this.txtOAuth.Size = new System.Drawing.Size(254, 20);
+            this.txtOAuth.Size = new System.Drawing.Size(220, 20);
             this.txtOAuth.TabIndex = 5;
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(12, 121);
+            this.btnSave.Location = new System.Drawing.Point(12, 58);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 6;
@@ -83,29 +83,29 @@
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.Location = new System.Drawing.Point(275, 121);
+            this.btnCancel.Location = new System.Drawing.Point(275, 58);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 7;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
-            // btnGetToken
+            // lnkGetOAuth
             // 
-            this.btnGetToken.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnGetToken.Location = new System.Drawing.Point(275, 72);
-            this.btnGetToken.Name = "btnGetToken";
-            this.btnGetToken.Size = new System.Drawing.Size(75, 23);
-            this.btnGetToken.TabIndex = 8;
-            this.btnGetToken.Text = "Get Token";
-            this.btnGetToken.UseVisualStyleBackColor = true;
+            this.lnkGetOAuth.AutoSize = true;
+            this.lnkGetOAuth.Location = new System.Drawing.Point(127, 63);
+            this.lnkGetOAuth.Name = "lnkGetOAuth";
+            this.lnkGetOAuth.Size = new System.Drawing.Size(78, 13);
+            this.lnkGetOAuth.TabIndex = 8;
+            this.lnkGetOAuth.TabStop = true;
+            this.lnkGetOAuth.Text = "Get OAuth Key";
             // 
             // FormToken
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(362, 158);
-            this.Controls.Add(this.btnGetToken);
+            this.ClientSize = new System.Drawing.Size(362, 90);
+            this.Controls.Add(this.lnkGetOAuth);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.txtOAuth);
@@ -132,6 +132,6 @@
         private System.Windows.Forms.TextBox txtOAuth;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button btnGetToken;
+        private System.Windows.Forms.LinkLabel lnkGetOAuth;
     }
 }

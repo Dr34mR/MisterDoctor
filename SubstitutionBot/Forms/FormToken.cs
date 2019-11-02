@@ -28,7 +28,7 @@ namespace SubstitutionBot.Forms
 
             CancelButton = btnCancel;
 
-            btnGetToken.Click += btnGetToken_Click;
+            lnkGetOAuth.LinkClicked += lnkGetOAuth_LinkClicked;
             btnSave.Click += btnSave_Click;
             btnCancel.Click += btnCancel_Click;
 
@@ -38,7 +38,7 @@ namespace SubstitutionBot.Forms
             ToggleSave();
         }
 
-        private static void btnGetToken_Click(object sender, EventArgs e)
+        private void lnkGetOAuth_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("https://twitchapps.com/tmi/");
         }

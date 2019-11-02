@@ -31,21 +31,31 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.tokenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wordListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label1 = new System.Windows.Forms.Label();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lblConnect = new System.Windows.Forms.Label();
             this.txtChannel = new System.Windows.Forms.TextBox();
             this.btnConnect = new System.Windows.Forms.Button();
             this.chkConnect = new System.Windows.Forms.CheckBox();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.stripLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblCooldown = new System.Windows.Forms.Label();
+            this.txtCooldown = new System.Windows.Forms.TextBox();
+            this.btnUpdate = new System.Windows.Forms.Button();
+            this.lblProc = new System.Windows.Forms.Label();
+            this.txtProc = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tokenToolStripMenuItem,
-            this.wordListToolStripMenuItem});
+            this.wordListToolStripMenuItem,
+            this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(464, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(483, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -61,28 +71,34 @@
             this.wordListToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
             this.wordListToolStripMenuItem.Text = "Word List";
             // 
-            // label1
+            // aboutToolStripMenuItem
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 33);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(101, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Connect to Channel";
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.aboutToolStripMenuItem.Text = "About";
+            // 
+            // lblConnect
+            // 
+            this.lblConnect.AutoSize = true;
+            this.lblConnect.Location = new System.Drawing.Point(12, 33);
+            this.lblConnect.Name = "lblConnect";
+            this.lblConnect.Size = new System.Drawing.Size(101, 13);
+            this.lblConnect.TabIndex = 1;
+            this.lblConnect.Text = "Connect to Channel";
             // 
             // txtChannel
             // 
             this.txtChannel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtChannel.Location = new System.Drawing.Point(119, 30);
+            this.txtChannel.Location = new System.Drawing.Point(120, 30);
             this.txtChannel.Name = "txtChannel";
-            this.txtChannel.Size = new System.Drawing.Size(155, 20);
+            this.txtChannel.Size = new System.Drawing.Size(173, 20);
             this.txtChannel.TabIndex = 2;
             // 
             // btnConnect
             // 
             this.btnConnect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnConnect.Location = new System.Drawing.Point(280, 28);
+            this.btnConnect.Location = new System.Drawing.Point(299, 28);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(75, 23);
             this.btnConnect.TabIndex = 3;
@@ -93,34 +109,105 @@
             // 
             this.chkConnect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkConnect.AutoSize = true;
-            this.chkConnect.Location = new System.Drawing.Point(361, 32);
+            this.chkConnect.Location = new System.Drawing.Point(380, 32);
             this.chkConnect.Name = "chkConnect";
             this.chkConnect.Size = new System.Drawing.Size(91, 17);
             this.chkConnect.TabIndex = 4;
             this.chkConnect.Text = "Auto Connect";
             this.chkConnect.UseVisualStyleBackColor = true;
             // 
+            // statusStrip
+            // 
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.stripLabel1});
+            this.statusStrip.Location = new System.Drawing.Point(0, 114);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(483, 22);
+            this.statusStrip.TabIndex = 5;
+            this.statusStrip.Text = "statusStrip1";
+            // 
+            // stripLabel1
+            // 
+            this.stripLabel1.Name = "stripLabel1";
+            this.stripLabel1.Size = new System.Drawing.Size(468, 17);
+            this.stripLabel1.Spring = true;
+            this.stripLabel1.Text = "toolStripStatusLabel1";
+            this.stripLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lblCooldown
+            // 
+            this.lblCooldown.AutoSize = true;
+            this.lblCooldown.Location = new System.Drawing.Point(12, 85);
+            this.lblCooldown.Name = "lblCooldown";
+            this.lblCooldown.Size = new System.Drawing.Size(82, 13);
+            this.lblCooldown.TabIndex = 6;
+            this.lblCooldown.Text = "Cooldown (Sec)";
+            // 
+            // txtCooldown
+            // 
+            this.txtCooldown.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtCooldown.Location = new System.Drawing.Point(120, 82);
+            this.txtCooldown.Name = "txtCooldown";
+            this.txtCooldown.Size = new System.Drawing.Size(173, 20);
+            this.txtCooldown.TabIndex = 7;
+            // 
+            // btnUpdate
+            // 
+            this.btnUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnUpdate.Location = new System.Drawing.Point(299, 80);
+            this.btnUpdate.Name = "btnUpdate";
+            this.btnUpdate.Size = new System.Drawing.Size(75, 23);
+            this.btnUpdate.TabIndex = 8;
+            this.btnUpdate.Text = "Update";
+            this.btnUpdate.UseVisualStyleBackColor = true;
+            // 
+            // lblProc
+            // 
+            this.lblProc.AutoSize = true;
+            this.lblProc.Location = new System.Drawing.Point(12, 59);
+            this.lblProc.Name = "lblProc";
+            this.lblProc.Size = new System.Drawing.Size(102, 13);
+            this.lblProc.TabIndex = 9;
+            this.lblProc.Text = "Proc (Occurance %)";
+            // 
+            // txtProc
+            // 
+            this.txtProc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProc.Location = new System.Drawing.Point(120, 56);
+            this.txtProc.Name = "txtProc";
+            this.txtProc.Size = new System.Drawing.Size(173, 20);
+            this.txtProc.TabIndex = 10;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(464, 312);
+            this.ClientSize = new System.Drawing.Size(483, 136);
+            this.Controls.Add(this.txtProc);
+            this.Controls.Add(this.lblProc);
+            this.Controls.Add(this.btnUpdate);
+            this.Controls.Add(this.txtCooldown);
+            this.Controls.Add(this.lblCooldown);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.chkConnect);
             this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.txtChannel);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblConnect);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormMain";
-            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FormMain";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -131,10 +218,18 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem tokenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem wordListToolStripMenuItem;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblConnect;
         private System.Windows.Forms.TextBox txtChannel;
         private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.CheckBox chkConnect;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel stripLabel1;
+        private System.Windows.Forms.Label lblCooldown;
+        private System.Windows.Forms.TextBox txtCooldown;
+        private System.Windows.Forms.Button btnUpdate;
+        private System.Windows.Forms.Label lblProc;
+        private System.Windows.Forms.TextBox txtProc;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     }
 }
 
