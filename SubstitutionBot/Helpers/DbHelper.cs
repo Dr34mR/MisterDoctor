@@ -56,7 +56,6 @@ namespace SubstitutionBot.Helpers
             using (var db = new LiteDatabase(DbName))
             {
                 // Get Token Collection
-
                 var collection = db.GetCollection<AppSettings>(CollectionSettings);
                 var settings = collection.FindAll();
 
@@ -92,7 +91,7 @@ namespace SubstitutionBot.Helpers
         {
             using (var db = new LiteDatabase(DbName))
             {
-                // Get Token Collection
+                if (!db.CollectionExists(CollectionWords)) return null;
 
                 var collection = db.GetCollection<Word>(CollectionSettings);
                 return collection.FindAll().ToArray();
@@ -120,6 +119,8 @@ namespace SubstitutionBot.Helpers
 
             using (var db = new LiteDatabase(DbName))
             {
+                if (!db.CollectionExists(CollectionWords)) return;
+
                 var collection = db.GetCollection<Word>(CollectionWords);
                 collection.Delete(word.Id);
             }
@@ -129,6 +130,7 @@ namespace SubstitutionBot.Helpers
         {
             var words = WordsGet();
 
+            if (words == null) return null;
             if (words.Length == 0) return null;
 
             var rnd = new Random();

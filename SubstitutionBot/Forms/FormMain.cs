@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using SubstitutionBot.Classes;
 using SubstitutionBot.Helpers;
@@ -15,6 +16,10 @@ namespace SubstitutionBot.Forms
         private TwitchClient _twitchClient;
         private readonly AppSettings _settings = DbHelper.AppSettingsGet();
 
+        private readonly Random _randGenerator = new Random(Thread.CurrentThread.ManagedThreadId);
+        private readonly object _threadLock = new object();
+        private DateTime? _coolDownTime;
+        
         public FormMain()
         {
             InitializeComponent();
@@ -36,13 +41,19 @@ namespace SubstitutionBot.Forms
             wordListToolStripMenuItem.Click += wordMenu_Click;
             aboutToolStripMenuItem.Click += aboutMenu_Click;
 
+            txtChannel.TextChanged += txtChannel_TextChanged;
             btnConnect.Click += btnConnect_Click;
 
             txtChannel.Text = _settings.ChannelName;
             chkConnect.Checked = _settings.AutoConnect;
             txtProc.Text = _settings.ProcChance.ToString();
             txtCooldown.Text = _settings.CoolDown.ToString();
+            
+            UpdateFormStatus();
+        }
 
+        private void txtChannel_TextChanged(object sender, EventArgs e)
+        {
             UpdateFormStatus();
         }
 
@@ -54,6 +65,7 @@ namespace SubstitutionBot.Forms
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
+            txtChannel.Text = txtChannel.Text.Trim();
             if (_twitchClient != null) Disconnect();
             else Connect();
         }
@@ -65,9 +77,7 @@ namespace SubstitutionBot.Forms
         
         private void wordMenu_Click(object sender, EventArgs e)
         {
-            var wordForm = new FormWords();
-            wordForm.ShowDialog(this);
-            wordForm.Dispose();
+            ShowWords();
         }
 
         private void aboutMenu_Click(object sender, EventArgs e)
@@ -102,6 +112,13 @@ namespace SubstitutionBot.Forms
             {
                 tokenForm?.Dispose();
             }
+        }
+
+        private void ShowWords()
+        {
+            var wordForm = new FormWords();
+            wordForm.ShowDialog(this);
+            wordForm.Dispose();
         }
 
         // Twitch client things
@@ -140,10 +157,17 @@ namespace SubstitutionBot.Forms
                 return;
             }
 
+            if (DbHelper.WordRandom() == null)
+            {
+                ShowError("No Substitution Words Set");
+                ShowWords();
+            }
+
             var twitchCredentials = new ConnectionCredentials(token.Username, token.UserOAuthKey);
 
             _twitchClient = new TwitchClient();
             _twitchClient.OnMessageReceived += Twitch_OnMessageReceived;
+            _twitchClient.OnConnected += Twitch_OnConnected;
             try
             {
                 _twitchClient.Initialize(twitchCredentials, txtChannel.Text.Trim());
@@ -157,6 +181,11 @@ namespace SubstitutionBot.Forms
 
             SaveSettings();
             UpdateFormStatus();
+        }
+
+        private void Twitch_OnConnected(object sender, OnConnectedArgs e)
+        {
+            _twitchClient.SendMessage(txtChannel.Text, "Connected");
         }
 
         private void Disconnect()
@@ -189,7 +218,8 @@ namespace SubstitutionBot.Forms
                 stripLabel1.ForeColor = Color.DarkRed;
 
                 btnConnect.Text = "Connect";
-                txtChannel.Enabled = true;
+                txtChannel.Enabled = Enabled;
+                btnConnect.Enabled = !string.IsNullOrEmpty(txtChannel.Text.Trim());
             }
             else
             {
@@ -207,8 +237,41 @@ namespace SubstitutionBot.Forms
             if (message == null) return;
             if (message.IsMe) return;
 
+            lock (_threadLock)
+            {
+                // Cooldown ?
+                if (_coolDownTime.HasValue)
+                {
+                    if (_coolDownTime > DateTime.Now) return;
+                    _coolDownTime = null;
+                }
 
-            _twitchClient.SendMessage(message.Channel, $"Received {message.Message}");
+                // Min is Inclisive
+                // Max is Exclusive
+
+                var newValue = _randGenerator.Next(1, 101); // 1 to 100
+                if (newValue > _settings.ProcChance) return;
+
+                // Sanity Checks on message
+
+                var userMessage = message.Message.Trim();
+                if (string.IsNullOrEmpty(userMessage)) return;
+
+                var messageParts = userMessage.Trim().Split(' ');
+                _coolDownTime = DateTime.Now.AddSeconds(_settings.CoolDown);
+                
+                var hasReplaced = false;
+                while (!hasReplaced)
+                {
+                    var replaceIndex = _randGenerator.Next(userMessage.Length);
+                    if (string.IsNullOrEmpty(messageParts[replaceIndex])) continue;
+
+                    messageParts[replaceIndex] = DbHelper.WordRandom().Value;
+                    hasReplaced = true;
+                }
+
+                _twitchClient.SendMessage(message.Channel, string.Join(" ", messageParts));
+            }
         }
 
         private void ShowError(string message)
