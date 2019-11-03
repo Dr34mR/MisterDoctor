@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Threading;
+using System.Timers;
 using System.Windows.Forms;
 using SubstitutionBot.Classes;
 using SubstitutionBot.Helpers;
@@ -8,6 +9,7 @@ using SubstitutionBot.Properties;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
+using Timer = System.Timers.Timer;
 
 namespace SubstitutionBot.Forms
 {
@@ -19,6 +21,8 @@ namespace SubstitutionBot.Forms
         private readonly Random _randGenerator = new Random(Thread.CurrentThread.ManagedThreadId);
         private readonly object _threadLock = new object();
         private DateTime? _coolDownTime;
+
+        private readonly Timer _timer = new Timer(1000);
         
         public FormMain()
         {
@@ -29,9 +33,9 @@ namespace SubstitutionBot.Forms
         {
             Icon = Resources.favicon;
 
-            stripLabel1.Spring = true;
-            stripLabel1.TextAlign = ContentAlignment.MiddleRight;
-            stripLabel1.Font = new Font(stripLabel1.Font, FontStyle.Bold);
+            stripConnected.Spring = true;
+            stripConnected.TextAlign = ContentAlignment.MiddleRight;
+            stripConnected.Font = new Font(stripConnected.Font, FontStyle.Bold);
 
             statusStrip.SizingGrip = false;
 
@@ -41,6 +45,8 @@ namespace SubstitutionBot.Forms
             wordListToolStripMenuItem.Click += wordMenu_Click;
             aboutToolStripMenuItem.Click += aboutMenu_Click;
 
+            btnUpdate.Click += btnUpdate_Click;
+
             txtChannel.TextChanged += txtChannel_TextChanged;
             btnConnect.Click += btnConnect_Click;
 
@@ -48,8 +54,52 @@ namespace SubstitutionBot.Forms
             chkConnect.Checked = _settings.AutoConnect;
             txtProc.Text = _settings.ProcChance.ToString();
             txtCooldown.Text = _settings.CoolDown.ToString();
-            
+
             UpdateFormStatus();
+
+            _timer.AutoReset = true;
+            _timer.Elapsed += timer_Elapsed;
+            _timer.Start();
+        }
+
+        private void timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            var textToSet = "No Cooldown";
+            lock (_threadLock)
+            {
+                if (_coolDownTime != null)
+                {
+                    if (DateTime.Now > _coolDownTime) _coolDownTime = null;
+                    else
+                    {
+                        var diff = _coolDownTime.Value - DateTime.Now;
+                        textToSet = $"Cooldown {Math.Floor(diff.TotalSeconds)} second/s";
+                    }
+                }
+            }
+            stripCooldown.Text = textToSet;
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            if (!int.TryParse(txtProc.Text, out var intProc))
+            {
+                ShowError("Proc Chance must be a number");
+                return;
+            }
+
+            if (!int.TryParse(txtCooldown.Text, out var intCoolDown))
+            {
+                ShowError("Cooldown must be a number");
+                return;
+            }
+
+            _settings.CoolDown = intCoolDown;
+            _settings.ProcChance = intProc;
+
+            SaveSettings();
+
+            MessageBoxEx.Show(this, "Settings Updated", Application.ProductName, MessageBoxButtons.OK);
         }
 
         private void txtChannel_TextChanged(object sender, EventArgs e)
@@ -90,6 +140,14 @@ namespace SubstitutionBot.Forms
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Enabled = false;
+
+            _timer.Stop();
+            _timer.Dispose();
+            
+            if (int.TryParse(txtProc.Text, out var intProc)) _settings.ProcChance = intProc;
+            if (int.TryParse(txtCooldown.Text, out var intCoolDown)) _settings.CoolDown = intCoolDown;
+
             SaveSettings();
             Disconnect();
         }
@@ -161,7 +219,23 @@ namespace SubstitutionBot.Forms
             {
                 ShowError("No Substitution Words Set");
                 ShowWords();
+                return;
             }
+
+            if (!int.TryParse(txtProc.Text, out var intProc))
+            {
+                ShowError("Proc Chance must be a number");
+                return;
+            }
+
+            if (!int.TryParse(txtCooldown.Text, out var intCoolDown))
+            {
+                ShowError("Cooldown must be a number");
+                return;
+            }
+
+            _settings.CoolDown = intCoolDown;
+            _settings.ProcChance = intProc;
 
             var twitchCredentials = new ConnectionCredentials(token.Username, token.UserOAuthKey);
 
@@ -214,8 +288,8 @@ namespace SubstitutionBot.Forms
         {
             if (_twitchClient == null)
             {
-                stripLabel1.Text = "Disconnected";
-                stripLabel1.ForeColor = Color.DarkRed;
+                stripConnected.Text = "Disconnected";
+                stripConnected.ForeColor = Color.DarkRed;
 
                 btnConnect.Text = "Connect";
                 txtChannel.Enabled = Enabled;
@@ -223,12 +297,14 @@ namespace SubstitutionBot.Forms
             }
             else
             {
-                stripLabel1.Text = $"Connected as [{_twitchClient.TwitchUsername}]";
-                stripLabel1.ForeColor = Color.DarkGreen;
+                stripConnected.Text = $"Connected as [{_twitchClient.TwitchUsername}]";
+                stripConnected.ForeColor = Color.DarkGreen;
 
                 btnConnect.Text = "Disconnect";
                 txtChannel.Enabled = false;
             }
+
+            btnUpdate.Enabled = !txtChannel.Enabled;
         }
 
         private void Twitch_OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -263,7 +339,7 @@ namespace SubstitutionBot.Forms
                 var hasReplaced = false;
                 while (!hasReplaced)
                 {
-                    var replaceIndex = _randGenerator.Next(userMessage.Length);
+                    var replaceIndex = _randGenerator.Next(messageParts.Length);
                     if (string.IsNullOrEmpty(messageParts[replaceIndex])) continue;
 
                     messageParts[replaceIndex] = DbHelper.WordRandom().Value;

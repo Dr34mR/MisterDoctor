@@ -37,7 +37,8 @@
             this.btnConnect = new System.Windows.Forms.Button();
             this.chkConnect = new System.Windows.Forms.CheckBox();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.stripLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.stripCooldown = new System.Windows.Forms.ToolStripStatusLabel();
+            this.stripConnected = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblCooldown = new System.Windows.Forms.Label();
             this.txtCooldown = new System.Windows.Forms.TextBox();
             this.btnUpdate = new System.Windows.Forms.Button();
@@ -119,20 +120,27 @@
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.stripLabel1});
+            this.stripCooldown,
+            this.stripConnected});
             this.statusStrip.Location = new System.Drawing.Point(0, 114);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(483, 22);
             this.statusStrip.TabIndex = 5;
             this.statusStrip.Text = "statusStrip1";
             // 
-            // stripLabel1
+            // stripCooldown
             // 
-            this.stripLabel1.Name = "stripLabel1";
-            this.stripLabel1.Size = new System.Drawing.Size(468, 17);
-            this.stripLabel1.Spring = true;
-            this.stripLabel1.Text = "toolStripStatusLabel1";
-            this.stripLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.stripCooldown.Name = "stripCooldown";
+            this.stripCooldown.Size = new System.Drawing.Size(118, 17);
+            this.stripCooldown.Text = "toolStripStatusLabel1";
+            // 
+            // stripConnected
+            // 
+            this.stripConnected.Name = "stripConnected";
+            this.stripConnected.Size = new System.Drawing.Size(350, 17);
+            this.stripConnected.Spring = true;
+            this.stripConnected.Text = "toolStripStatusLabel1";
+            this.stripConnected.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblCooldown
             // 
@@ -223,13 +231,14 @@
         private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.CheckBox chkConnect;
         private System.Windows.Forms.StatusStrip statusStrip;
-        private System.Windows.Forms.ToolStripStatusLabel stripLabel1;
+        private System.Windows.Forms.ToolStripStatusLabel stripConnected;
         private System.Windows.Forms.Label lblCooldown;
         private System.Windows.Forms.TextBox txtCooldown;
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.Label lblProc;
         private System.Windows.Forms.TextBox txtProc;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel stripCooldown;
     }
 }
 

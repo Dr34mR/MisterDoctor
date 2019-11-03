@@ -9,8 +9,6 @@ namespace SubstitutionBot.Forms
 
     internal partial class FormWords : Form
     {
-        private readonly Word[] _words = DbHelper.WordsGet();
-
         public FormWords()
         {
             InitializeComponent();
@@ -18,12 +16,17 @@ namespace SubstitutionBot.Forms
 
         private void FormWords_Load(object sender, EventArgs e)
         {
-            Text = "Substitution Words";
+            Text = "Substitute List";
 
-            CancelButton = btnCancel;
+            CancelButton = btnClose;
 
-            btnCancel.Click += btnCancel_Click;
-            gridWords.CellClick += gridWords_CellClick;
+            btnAdd.Click += btnAdd_Click;
+            btnDelete.Click += btnDelete_Click;
+            btnClose.Click += btnClose_Click;
+
+            gridWords.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            gridWords.DataSource = new Word[0];
 
             gridWords.AllowUserToAddRows = false;
             gridWords.AllowUserToDeleteRows = false;
@@ -31,29 +34,50 @@ namespace SubstitutionBot.Forms
             gridWords.RowHeadersVisible = false;
             gridWords.ColumnHeadersVisible = false;
 
+            gridWords.AllowUserToResizeRows = false;
+            gridWords.AllowUserToResizeColumns = false;
+            gridWords.MultiSelect = false;
+
+            gridWords.BackColor = BackColor;
+            gridWords.BackgroundColor = BackColor;
+
+            gridWords.BorderStyle = BorderStyle.None;
+
+            gridWords.Columns[0].Visible = false;
+
             SetWords();
         }
 
-        private void gridWords_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void btnDelete_Click(object sender, EventArgs e)
         {
-            
+            if (!(gridWords.CurrentRow?.DataBoundItem is Word word)) return;
+
+            var result = MessageBoxEx.Show($"Remove '{word}'?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes) return;
+
+            DbHelper.WordDelete(word);
+            SetWords();
+        }
+
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+            var formAdd = new FormAddWord();
+            formAdd.ShowDialog(this);
+            var returnWord = formAdd.Word;
+            formAdd.Dispose();
+
+            if (string.IsNullOrEmpty(returnWord)) return;
+            DbHelper.WordAdd(returnWord);
+
+            SetWords();
         }
 
         private void SetWords()
         {
-            if (_words != null)
-            {
-                gridWords.DataSource = _words;
-                gridWords.Columns[0].Visible = false;
-                gridWords.Columns[1].Width = gridWords.Width - 3;
-            }
-            else
-            {
-                gridWords.Enabled = false;
-            }
+            gridWords.DataSource = DbHelper.WordsGet();
         }
 
-        private void btnCancel_Click(object sender, EventArgs e)
+        private void btnClose_Click(object sender, EventArgs e)
         {
             Hide();
         }

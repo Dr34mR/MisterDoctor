@@ -81,6 +81,8 @@ namespace SubstitutionBot.Helpers
                 {
                     origSetting.ChannelName = appSetting.ChannelName;
                     origSetting.AutoConnect = appSetting.AutoConnect;
+                    origSetting.ProcChance = appSetting.ProcChance;
+                    origSetting.CoolDown = appSetting.CoolDown;
 
                     collection.Update(origSetting);
                 }
@@ -93,23 +95,27 @@ namespace SubstitutionBot.Helpers
             {
                 if (!db.CollectionExists(CollectionWords)) return null;
 
-                var collection = db.GetCollection<Word>(CollectionSettings);
-                return collection.FindAll().ToArray();
+                var collection = db.GetCollection<Word>(CollectionWords);
+                return collection.FindAll().OrderBy(i => i.Value).ToArray();
             }
         }
 
-        public static void WordAdd(Word word)
+        public static void WordAdd(string word)
         {
-            if (word == null) return;
-            if (string.IsNullOrEmpty(word.Value.Trim())) return;
+            if (string.IsNullOrEmpty(word.Trim())) return;
+
+            var objWord = new Word
+            {
+                Value = word.ToLower().Trim()
+            };
 
             using (var db = new LiteDatabase(DbName))
             {
                 var collection = db.GetCollection<Word>(CollectionWords);
-                var existing = collection.Find(i => i.Value.Equals(word.Value, StringComparison.CurrentCultureIgnoreCase));
+                var existing = collection.Find(i => i.Value.Equals(word, StringComparison.CurrentCultureIgnoreCase));
                 if (existing.Any()) return;
 
-                collection.Insert(word);
+                var checkReturn = collection.Insert(objWord);
             }
         }
 
