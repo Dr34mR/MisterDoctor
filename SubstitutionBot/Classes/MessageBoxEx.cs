@@ -17,7 +17,6 @@ using System.Windows.Forms;
 // ReSharper disable EnumUnderlyingTypeIsInt
 // ReSharper disable RedundantDelegateCreation
 
-
 namespace SubstitutionBot.Classes
 {
     /// <summary>

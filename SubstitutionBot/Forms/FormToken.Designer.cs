@@ -43,7 +43,7 @@
             this.lblUsername.Location = new System.Drawing.Point(12, 9);
             this.lblUsername.Name = "lblUsername";
             this.lblUsername.Size = new System.Drawing.Size(109, 13);
-            this.lblUsername.TabIndex = 2;
+            this.lblUsername.TabIndex = 0;
             this.lblUsername.Text = "Twitch Bot Username";
             // 
             // lblOAuth
@@ -52,7 +52,7 @@
             this.lblOAuth.Location = new System.Drawing.Point(12, 35);
             this.lblOAuth.Name = "lblOAuth";
             this.lblOAuth.Size = new System.Drawing.Size(112, 13);
-            this.lblOAuth.TabIndex = 3;
+            this.lblOAuth.TabIndex = 2;
             this.lblOAuth.Text = "Twitch Bot OAuth Key";
             // 
             // txtUsername
@@ -60,7 +60,7 @@
             this.txtUsername.Location = new System.Drawing.Point(130, 6);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(220, 20);
-            this.txtUsername.TabIndex = 4;
+            this.txtUsername.TabIndex = 1;
             // 
             // txtOAuth
             // 
@@ -69,14 +69,14 @@
             this.txtOAuth.Location = new System.Drawing.Point(130, 32);
             this.txtOAuth.Name = "txtOAuth";
             this.txtOAuth.Size = new System.Drawing.Size(220, 20);
-            this.txtOAuth.TabIndex = 5;
+            this.txtOAuth.TabIndex = 3;
             // 
             // btnSave
             // 
             this.btnSave.Location = new System.Drawing.Point(12, 58);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
-            this.btnSave.TabIndex = 6;
+            this.btnSave.TabIndex = 4;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
             // 
@@ -86,7 +86,7 @@
             this.btnCancel.Location = new System.Drawing.Point(275, 58);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 7;
+            this.btnCancel.TabIndex = 6;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
@@ -96,7 +96,7 @@
             this.lnkGetOAuth.Location = new System.Drawing.Point(127, 63);
             this.lnkGetOAuth.Name = "lnkGetOAuth";
             this.lnkGetOAuth.Size = new System.Drawing.Size(78, 13);
-            this.lnkGetOAuth.TabIndex = 8;
+            this.lnkGetOAuth.TabIndex = 5;
             this.lnkGetOAuth.TabStop = true;
             this.lnkGetOAuth.Text = "Get OAuth Key";
             // 

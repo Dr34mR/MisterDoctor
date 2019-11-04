@@ -31,6 +31,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.tokenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wordListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ignoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lblConnect = new System.Windows.Forms.Label();
             this.txtChannel = new System.Windows.Forms.TextBox();
@@ -44,7 +45,6 @@
             this.btnUpdate = new System.Windows.Forms.Button();
             this.lblProc = new System.Windows.Forms.Label();
             this.txtProc = new System.Windows.Forms.TextBox();
-            this.ignoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -74,6 +74,12 @@
             this.wordListToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
             this.wordListToolStripMenuItem.Text = "Word List";
             // 
+            // ignoreToolStripMenuItem
+            // 
+            this.ignoreToolStripMenuItem.Name = "ignoreToolStripMenuItem";
+            this.ignoreToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            this.ignoreToolStripMenuItem.Text = "Ignore";
+            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
@@ -96,7 +102,7 @@
             this.txtChannel.Location = new System.Drawing.Point(120, 30);
             this.txtChannel.Name = "txtChannel";
             this.txtChannel.Size = new System.Drawing.Size(173, 20);
-            this.txtChannel.TabIndex = 2;
+            this.txtChannel.TabIndex = 0;
             // 
             // btnConnect
             // 
@@ -104,7 +110,7 @@
             this.btnConnect.Location = new System.Drawing.Point(299, 28);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(75, 23);
-            this.btnConnect.TabIndex = 3;
+            this.btnConnect.TabIndex = 1;
             this.btnConnect.Text = "Connect";
             this.btnConnect.UseVisualStyleBackColor = true;
             // 
@@ -115,7 +121,7 @@
             this.chkConnect.Location = new System.Drawing.Point(380, 32);
             this.chkConnect.Name = "chkConnect";
             this.chkConnect.Size = new System.Drawing.Size(91, 17);
-            this.chkConnect.TabIndex = 4;
+            this.chkConnect.TabIndex = 2;
             this.chkConnect.Text = "Auto Connect";
             this.chkConnect.UseVisualStyleBackColor = true;
             // 
@@ -139,7 +145,7 @@
             // stripConnected
             // 
             this.stripConnected.Name = "stripConnected";
-            this.stripConnected.Size = new System.Drawing.Size(319, 17);
+            this.stripConnected.Size = new System.Drawing.Size(350, 17);
             this.stripConnected.Spring = true;
             this.stripConnected.Text = "toolStripStatusLabel1";
             this.stripConnected.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -160,7 +166,7 @@
             this.txtCooldown.Location = new System.Drawing.Point(120, 82);
             this.txtCooldown.Name = "txtCooldown";
             this.txtCooldown.Size = new System.Drawing.Size(173, 20);
-            this.txtCooldown.TabIndex = 7;
+            this.txtCooldown.TabIndex = 4;
             // 
             // btnUpdate
             // 
@@ -168,7 +174,7 @@
             this.btnUpdate.Location = new System.Drawing.Point(299, 80);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(75, 23);
-            this.btnUpdate.TabIndex = 8;
+            this.btnUpdate.TabIndex = 5;
             this.btnUpdate.Text = "Update";
             this.btnUpdate.UseVisualStyleBackColor = true;
             // 
@@ -188,13 +194,7 @@
             this.txtProc.Location = new System.Drawing.Point(120, 56);
             this.txtProc.Name = "txtProc";
             this.txtProc.Size = new System.Drawing.Size(173, 20);
-            this.txtProc.TabIndex = 10;
-            // 
-            // ignoreToolStripMenuItem
-            // 
-            this.ignoreToolStripMenuItem.Name = "ignoreToolStripMenuItem";
-            this.ignoreToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
-            this.ignoreToolStripMenuItem.Text = "Ignore";
+            this.txtProc.TabIndex = 3;
             // 
             // FormMain
             // 

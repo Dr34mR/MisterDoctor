@@ -43,7 +43,7 @@
             this.btnClose.Location = new System.Drawing.Point(182, 6);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
-            this.btnClose.TabIndex = 8;
+            this.btnClose.TabIndex = 2;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
             // 
@@ -52,7 +52,7 @@
             this.btnAdd.Location = new System.Drawing.Point(12, 6);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
-            this.btnAdd.TabIndex = 11;
+            this.btnAdd.TabIndex = 0;
             this.btnAdd.Text = "Add";
             this.btnAdd.UseVisualStyleBackColor = true;
             // 
@@ -61,7 +61,7 @@
             this.btnDelete.Location = new System.Drawing.Point(97, 6);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(75, 23);
-            this.btnDelete.TabIndex = 12;
+            this.btnDelete.TabIndex = 1;
             this.btnDelete.Text = "Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
             // 
@@ -86,7 +86,7 @@
             this.gridWords.Name = "gridWords";
             this.gridWords.ReadOnly = true;
             this.gridWords.Size = new System.Drawing.Size(265, 177);
-            this.gridWords.TabIndex = 14;
+            this.gridWords.TabIndex = 0;
             // 
             // FormWords
             // 
