@@ -69,55 +69,6 @@ namespace SubstitutionBot.Forms
             _timer.Elapsed += timer_Elapsed;
             _timer.Start();
         }
-        
-        private void timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            var textToSet = "No Cooldown";
-            lock (_threadLock)
-            {
-                if (_procNext)
-                {
-                    textToSet = "Triggered - Waiting for next match";
-                }
-                else if (_coolDownTime != null)
-                {
-                    if (DateTime.Now > _coolDownTime) _coolDownTime = null;
-                    else
-                    {
-                        var diff = _coolDownTime.Value - DateTime.Now;
-                        textToSet = $"Cooldown {Math.Floor(diff.TotalSeconds)} second/s";
-                    }
-                }
-            }
-            stripCooldown.Text = textToSet;
-        }
-
-        private void btnUpdate_Click(object sender, EventArgs e)
-        {
-            if (!int.TryParse(txtProc.Text, out var intProc))
-            {
-                ShowError("Proc Chance must be a number");
-                return;
-            }
-
-            if (!int.TryParse(txtCooldown.Text, out var intCoolDown))
-            {
-                ShowError("Cooldown must be a number");
-                return;
-            }
-
-            _settings.CoolDown = intCoolDown;
-            _settings.ProcChance = intProc;
-
-            SaveSettings();
-
-            MessageBoxEx.Show(this, "Settings Updated", Application.ProductName, MessageBoxButtons.OK);
-        }
-
-        private void txtChannel_TextChanged(object sender, EventArgs e)
-        {
-            UpdateFormStatus();
-        }
 
         private void FormMain_Load(object sender, EventArgs e)
         {
@@ -127,18 +78,26 @@ namespace SubstitutionBot.Forms
             if (chkConnect.Checked) btnConnect.PerformClick();
         }
 
-        private void btnConnect_Click(object sender, EventArgs e)
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            txtChannel.Text = txtChannel.Text.Trim();
-            if (_twitchClient != null) Disconnect();
-            else Connect();
+            _closing = true;
+            Enabled = false;
+
+            _timer.Stop();
+            _timer.Dispose();
+
+            if (int.TryParse(txtProc.Text, out var intProc)) _settings.ProcChance = intProc;
+            if (int.TryParse(txtCooldown.Text, out var intCoolDown)) _settings.CoolDown = intCoolDown;
+
+            SaveSettings();
+            Disconnect();
         }
 
         private void tokenMenu_Click(object sender, EventArgs e)
         {
             ShowToken();
         }
-        
+
         private void wordMenu_Click(object sender, EventArgs e)
         {
             ShowWords();
@@ -157,21 +116,6 @@ namespace SubstitutionBot.Forms
             {
                 aboutForm.ShowDialog(this);
             }
-        }
-
-        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            _closing = true;
-            Enabled = false;
-
-            _timer.Stop();
-            _timer.Dispose();
-            
-            if (int.TryParse(txtProc.Text, out var intProc)) _settings.ProcChance = intProc;
-            if (int.TryParse(txtCooldown.Text, out var intCoolDown)) _settings.CoolDown = intCoolDown;
-
-            SaveSettings();
-            Disconnect();
         }
 
         private void ShowToken()
@@ -201,7 +145,98 @@ namespace SubstitutionBot.Forms
             wordForm.Dispose();
         }
 
-        // Twitch client things
+        private void txtChannel_TextChanged(object sender, EventArgs e)
+        {
+            UpdateFormStatus();
+        }
+
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+            txtChannel.Text = txtChannel.Text.Trim();
+            if (_twitchClient != null) Disconnect();
+            else Connect();
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            if (!int.TryParse(txtProc.Text, out var intProc))
+            {
+                ShowError("Proc Chance must be a number");
+                return;
+            }
+
+            if (!int.TryParse(txtCooldown.Text, out var intCoolDown))
+            {
+                ShowError("Cooldown must be a number");
+                return;
+            }
+
+            _settings.CoolDown = intCoolDown;
+            _settings.ProcChance = intProc;
+
+            SaveSettings();
+
+            MessageBoxEx.Show(this, "Settings Updated", Application.ProductName, MessageBoxButtons.OK);
+        }
+
+        private void SaveSettings()
+        {
+            _settings.ChannelName = txtChannel.Text.Trim();
+            _settings.AutoConnect = chkConnect.Checked;
+            DbHelper.AppSettingsSet(_settings);
+        }
+
+        private void UpdateFormStatus()
+        {
+            if (_twitchClient == null)
+            {
+                stripConnected.Text = "Disconnected";
+                stripConnected.ForeColor = Color.DarkRed;
+
+                btnConnect.Text = "Connect";
+                txtChannel.Enabled = Enabled;
+                btnConnect.Enabled = !string.IsNullOrEmpty(txtChannel.Text.Trim());
+            }
+            else
+            {
+                stripConnected.Text = $"Connected as [{_twitchClient.TwitchUsername}]";
+                stripConnected.ForeColor = Color.DarkGreen;
+
+                btnConnect.Text = "Disconnect";
+                txtChannel.Enabled = false;
+            }
+
+            btnUpdate.Enabled = !txtChannel.Enabled;
+        }
+
+        private void ShowError(string message)
+        {
+            MessageBoxEx.Show(this, message.Trim(), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            var textToSet = "No Cooldown";
+            lock (_threadLock)
+            {
+                if (_procNext)
+                {
+                    textToSet = "Triggered - Waiting for next match";
+                }
+                else if (_coolDownTime != null)
+                {
+                    if (DateTime.Now > _coolDownTime) _coolDownTime = null;
+                    else
+                    {
+                        var diff = _coolDownTime.Value - DateTime.Now;
+                        textToSet = $"Cooldown {Math.Floor(diff.TotalSeconds)} second/s";
+                    }
+                }
+            }
+            stripCooldown.Text = textToSet;
+        }
+
+        // Twitch Things
 
         private void Connect()
         {
@@ -288,37 +323,7 @@ namespace SubstitutionBot.Forms
 
             UpdateFormStatus();
         }
-
-        private void SaveSettings()
-        {
-            _settings.ChannelName = txtChannel.Text.Trim();
-            _settings.AutoConnect = chkConnect.Checked;
-            DbHelper.AppSettingsSet(_settings);
-        }
-
-        private void UpdateFormStatus()
-        {
-            if (_twitchClient == null)
-            {
-                stripConnected.Text = "Disconnected";
-                stripConnected.ForeColor = Color.DarkRed;
-
-                btnConnect.Text = "Connect";
-                txtChannel.Enabled = Enabled;
-                btnConnect.Enabled = !string.IsNullOrEmpty(txtChannel.Text.Trim());
-            }
-            else
-            {
-                stripConnected.Text = $"Connected as [{_twitchClient.TwitchUsername}]";
-                stripConnected.ForeColor = Color.DarkGreen;
-
-                btnConnect.Text = "Disconnect";
-                txtChannel.Enabled = false;
-            }
-
-            btnUpdate.Enabled = !txtChannel.Enabled;
-        }
-
+        
         private void Twitch_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
             if (_closing) return;
@@ -393,11 +398,6 @@ namespace SubstitutionBot.Forms
                 _coolDownTime = DateTime.Now.AddSeconds(_settings.CoolDown);
                 _procNext = false;
             }
-        }
-
-        private void ShowError(string message)
-        {
-            MessageBoxEx.Show(this, message.Trim(), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

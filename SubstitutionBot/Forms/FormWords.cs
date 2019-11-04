@@ -46,6 +46,19 @@ namespace SubstitutionBot.Forms
             SetWords();
         }
 
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+            var formAdd = new FormInput { Text = "Add Word" };
+            formAdd.ShowDialog(this);
+            var returnWord = formAdd.Value;
+            formAdd.Dispose();
+
+            if (string.IsNullOrEmpty(returnWord)) return;
+            DbHelper.WordAdd(returnWord);
+
+            SetWords();
+        }
+
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (!(gridWords.CurrentRow?.DataBoundItem is Word word)) return;
@@ -57,17 +70,9 @@ namespace SubstitutionBot.Forms
             SetWords();
         }
 
-        private void btnAdd_Click(object sender, EventArgs e)
+        private void btnClose_Click(object sender, EventArgs e)
         {
-            var formAdd = new FormInput {Text = "Add Word"};
-            formAdd.ShowDialog(this);
-            var returnWord = formAdd.Value;
-            formAdd.Dispose();
-
-            if (string.IsNullOrEmpty(returnWord)) return;
-            DbHelper.WordAdd(returnWord);
-
-            SetWords();
+            Hide();
         }
 
         private void SetWords()
@@ -75,11 +80,6 @@ namespace SubstitutionBot.Forms
             gridWords.DataSource = DbHelper.WordsGet();
             if (gridWords.Columns.Count > 0 && gridWords.Columns[0].Visible) 
                 gridWords.Columns[0].Visible = false;
-        }
-
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            Hide();
         }
     }
 }

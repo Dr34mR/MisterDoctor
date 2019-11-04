@@ -25,6 +25,16 @@ namespace SubstitutionBot.Forms
             txtWord.Focus();
         }
 
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+            Check();
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            Hide();
+        }
+
         private void txtWord_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter) return;
@@ -36,16 +46,6 @@ namespace SubstitutionBot.Forms
             var possibleVal = txtWord.Text.ToLower().Trim();
             if (string.IsNullOrEmpty(possibleVal)) Hide();
             Value = possibleVal;
-            Hide();
-        }
-
-        private void btnAdd_Click(object sender, EventArgs e)
-        {
-            Check();
-        }
-
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
             Hide();
         }
     }

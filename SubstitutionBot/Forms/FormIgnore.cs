@@ -46,15 +46,11 @@ namespace SubstitutionBot.Forms
             SetUsers();
         }
 
-        private void btnDelete_Click(object sender, EventArgs e)
+        private void SetUsers()
         {
-            if (!(gridWords.CurrentRow?.DataBoundItem is User user)) return;
-
-            var result = MessageBoxEx.Show($"Remove '{user}'?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (result != DialogResult.Yes) return;
-
-            IgnoreManager.RemoveIgnore(user.Username);
-            SetUsers();
+            gridWords.DataSource = IgnoreManager.GetUsers();
+            if (gridWords.Columns.Count > 0 && gridWords.Columns[0].Visible)
+                gridWords.Columns[0].Visible = false;
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -78,11 +74,15 @@ namespace SubstitutionBot.Forms
             SetUsers();
         }
 
-        private void SetUsers()
+        private void btnDelete_Click(object sender, EventArgs e)
         {
-            gridWords.DataSource = IgnoreManager.GetUsers();
-            if (gridWords.Columns.Count > 0 && gridWords.Columns[0].Visible)
-                gridWords.Columns[0].Visible = false;
+            if (!(gridWords.CurrentRow?.DataBoundItem is User user)) return;
+
+            var result = MessageBoxEx.Show($"Remove '{user}'?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes) return;
+
+            IgnoreManager.RemoveIgnore(user.Username);
+            SetUsers();
         }
 
         private void btnClose_Click(object sender, EventArgs e)
