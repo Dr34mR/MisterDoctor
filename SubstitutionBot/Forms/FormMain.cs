@@ -336,7 +336,8 @@ namespace SubstitutionBot.Forms
                 _twitchClient.SendMessage(message.Channel, $"Ok @{message.Username} :(");
                 return;
             }
-            else if (message.Message.StartsWith("!unignoreme", StringComparison.CurrentCultureIgnoreCase))
+
+            if (message.Message.StartsWith("!unignoreme", StringComparison.CurrentCultureIgnoreCase))
             {
                 if (!IgnoreManager.IgnoreUser(message.Username)) return;
                 IgnoreManager.RemoveIgnore(message.Username);
