@@ -107,7 +107,7 @@ namespace SubstitutionBot.Helpers
 
             var objWord = new Word
             {
-                Value = word.ToLower().Trim()
+                Value = word.Trim()
             };
             
             using (var db = new LiteDatabase(DbName))

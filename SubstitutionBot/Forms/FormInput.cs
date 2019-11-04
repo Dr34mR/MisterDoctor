@@ -43,7 +43,7 @@ namespace SubstitutionBot.Forms
 
         private void Check()
         {
-            var possibleVal = txtWord.Text.ToLower().Trim();
+            var possibleVal = txtWord.Text.Trim();
             if (string.IsNullOrEmpty(possibleVal)) Hide();
             Value = possibleVal;
             Hide();
