@@ -72,7 +72,11 @@ namespace SubstitutionBot.Forms
             var textToSet = "No Cooldown";
             lock (_threadLock)
             {
-                if (_coolDownTime != null)
+                if (_procNext)
+                {
+                    textToSet = "Triggered - Waiting for next match";
+                }
+                else if (_coolDownTime != null)
                 {
                     if (DateTime.Now > _coolDownTime) _coolDownTime = null;
                     else
@@ -315,6 +319,7 @@ namespace SubstitutionBot.Forms
             var message = e.ChatMessage;
             if (message == null) return;
             if (message.IsMe) return;
+            if (message.Username.Equals(_twitchClient.TwitchUsername, StringComparison.CurrentCultureIgnoreCase)) return;
 
             lock (_threadLock)
             {
