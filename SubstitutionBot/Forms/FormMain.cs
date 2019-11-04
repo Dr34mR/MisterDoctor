@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
 using SubstitutionBot.Classes;
 using SubstitutionBot.Helpers;
+using SubstitutionBot.Managers;
 using SubstitutionBot.Properties;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
@@ -23,7 +25,8 @@ namespace SubstitutionBot.Forms
         private DateTime? _coolDownTime;
 
         private readonly Timer _timer = new Timer(1000);
-        
+        private bool _procNext;
+
         public FormMain()
         {
             InitializeComponent();
@@ -54,6 +57,8 @@ namespace SubstitutionBot.Forms
             chkConnect.Checked = _settings.AutoConnect;
             txtProc.Text = _settings.ProcChance.ToString();
             txtCooldown.Text = _settings.CoolDown.ToString();
+
+            NounManager.Initialize();
 
             UpdateFormStatus();
 
@@ -323,28 +328,37 @@ namespace SubstitutionBot.Forms
                 // Min is Inclisive
                 // Max is Exclusive
 
-                var newValue = _randGenerator.Next(1, 101); // 1 to 100
-                if (newValue > _settings.ProcChance) return;
-
+                if (!_procNext)
+                {
+                    var newValue = _randGenerator.Next(1, 101); // 1 to 100
+                    if (newValue > _settings.ProcChance) return;
+                }
+                
                 // Sanity Checks on message
+
+                _procNext = true;
 
                 var userMessage = message.Message.Trim();
                 if (string.IsNullOrEmpty(userMessage)) return;
 
+                // Split the message into words
+
                 var messageParts = userMessage.Trim().Split(' ');
-                _coolDownTime = DateTime.Now.AddSeconds(_settings.CoolDown);
+                if (messageParts.Length <= 1) return;
+
+                // Get the indexes of the nouns
+
+                var nounIndexes = NounManager.NounIndexes(messageParts);
+                if (!nounIndexes.Any()) return;
+
+                // Randomly pick a noun index
+
+                var nounIndex = _randGenerator.Next(nounIndexes.Count);
+                messageParts[nounIndexes[nounIndex]] = DbHelper.WordRandom().Value;
                 
-                var hasReplaced = false;
-                while (!hasReplaced)
-                {
-                    var replaceIndex = _randGenerator.Next(messageParts.Length);
-                    if (string.IsNullOrEmpty(messageParts[replaceIndex])) continue;
-
-                    messageParts[replaceIndex] = DbHelper.WordRandom().Value;
-                    hasReplaced = true;
-                }
-
                 _twitchClient.SendMessage(message.Channel, string.Join(" ", messageParts));
+                _coolDownTime = DateTime.Now.AddSeconds(_settings.CoolDown);
+                _procNext = false;
             }
         }
 

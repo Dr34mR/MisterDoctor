@@ -16,7 +16,17 @@ namespace SubstitutionBot
             Application.SetCompatibleTextRenderingDefault(false);
 
             var form = new FormMain();
-            form.Setup();
+
+            try
+            {
+                form.Setup();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+            
             Application.Run(form);
         }
     }
