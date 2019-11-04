@@ -9,6 +9,8 @@ Twitch substitution bot, once connected, will read messages in your channel and 
 Messages are parsed using the 'nounlist.txt' for a word to replace.
 Messages that are single words are skipped regardless of noun match.
 
+[Download Page](https://github.com/Dr34mR/TwitchSubstitutionBot/releases)
+
 ### Packages currently being used
 - TwitchLib.Client
 - LiteDb
