@@ -75,6 +75,8 @@ namespace SubstitutionBot.Forms
         private void SetWords()
         {
             gridWords.DataSource = DbHelper.WordsGet();
+            if (gridWords.Columns.Count > 0 && gridWords.Columns[0].Visible) 
+                gridWords.Columns[0].Visible = false;
         }
 
         private void btnClose_Click(object sender, EventArgs e)
