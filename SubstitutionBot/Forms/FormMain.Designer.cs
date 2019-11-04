@@ -44,6 +44,7 @@
             this.btnUpdate = new System.Windows.Forms.Button();
             this.lblProc = new System.Windows.Forms.Label();
             this.txtProc = new System.Windows.Forms.TextBox();
+            this.ignoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -53,6 +54,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tokenToolStripMenuItem,
             this.wordListToolStripMenuItem,
+            this.ignoreToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -137,7 +139,7 @@
             // stripConnected
             // 
             this.stripConnected.Name = "stripConnected";
-            this.stripConnected.Size = new System.Drawing.Size(350, 17);
+            this.stripConnected.Size = new System.Drawing.Size(319, 17);
             this.stripConnected.Spring = true;
             this.stripConnected.Text = "toolStripStatusLabel1";
             this.stripConnected.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -187,6 +189,12 @@
             this.txtProc.Name = "txtProc";
             this.txtProc.Size = new System.Drawing.Size(173, 20);
             this.txtProc.TabIndex = 10;
+            // 
+            // ignoreToolStripMenuItem
+            // 
+            this.ignoreToolStripMenuItem.Name = "ignoreToolStripMenuItem";
+            this.ignoreToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            this.ignoreToolStripMenuItem.Text = "Ignore";
             // 
             // FormMain
             // 
@@ -239,6 +247,7 @@
         private System.Windows.Forms.TextBox txtProc;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel stripCooldown;
+        private System.Windows.Forms.ToolStripMenuItem ignoreToolStripMenuItem;
     }
 }
 

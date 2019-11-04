@@ -26,6 +26,7 @@ namespace SubstitutionBot.Forms
 
         private readonly Timer _timer = new Timer(1000);
         private bool _procNext;
+        private bool _closing;
 
         public FormMain()
         {
@@ -46,6 +47,7 @@ namespace SubstitutionBot.Forms
 
             tokenToolStripMenuItem.Click += tokenMenu_Click;
             wordListToolStripMenuItem.Click += wordMenu_Click;
+            ignoreToolStripMenuItem.Click += ignoreMenu_Click;
             aboutToolStripMenuItem.Click += aboutMenu_Click;
 
             btnUpdate.Click += btnUpdate_Click;
@@ -59,6 +61,7 @@ namespace SubstitutionBot.Forms
             txtCooldown.Text = _settings.CoolDown.ToString();
 
             NounManager.Initialize();
+            IgnoreManager.Initialize();
 
             UpdateFormStatus();
 
@@ -66,7 +69,7 @@ namespace SubstitutionBot.Forms
             _timer.Elapsed += timer_Elapsed;
             _timer.Start();
         }
-
+        
         private void timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             var textToSet = "No Cooldown";
@@ -141,6 +144,13 @@ namespace SubstitutionBot.Forms
             ShowWords();
         }
 
+        private void ignoreMenu_Click(object sender, EventArgs e)
+        {
+            var ignoreForm = new FormIgnore();
+            ignoreForm.ShowDialog(this);
+            ignoreForm.Dispose();
+        }
+
         private void aboutMenu_Click(object sender, EventArgs e)
         {
             using (var aboutForm = new FormAbout())
@@ -151,6 +161,7 @@ namespace SubstitutionBot.Forms
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            _closing = true;
             Enabled = false;
 
             _timer.Stop();
@@ -252,7 +263,6 @@ namespace SubstitutionBot.Forms
 
             _twitchClient = new TwitchClient();
             _twitchClient.OnMessageReceived += Twitch_OnMessageReceived;
-            _twitchClient.OnConnected += Twitch_OnConnected;
             try
             {
                 _twitchClient.Initialize(twitchCredentials, txtChannel.Text.Trim());
@@ -266,11 +276,6 @@ namespace SubstitutionBot.Forms
 
             SaveSettings();
             UpdateFormStatus();
-        }
-
-        private void Twitch_OnConnected(object sender, OnConnectedArgs e)
-        {
-            //_twitchClient.SendMessage(txtChannel.Text, "Connected");
         }
 
         private void Disconnect()
@@ -316,10 +321,32 @@ namespace SubstitutionBot.Forms
 
         private void Twitch_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
+            if (_closing) return;
             var message = e.ChatMessage;
             if (message == null) return;
             if (message.IsMe) return;
             if (message.Username.Equals(_twitchClient.TwitchUsername, StringComparison.CurrentCultureIgnoreCase)) return;
+
+            // Check for command
+
+            if (message.Message.StartsWith("!ignoreme", StringComparison.CurrentCultureIgnoreCase))
+            {
+                if (IgnoreManager.IgnoreUser(message.Username)) return;
+                IgnoreManager.AddIgnore(message.Username);
+                _twitchClient.SendMessage(message.Channel, $"Ok @{message.Username} :(");
+                return;
+            }
+            else if (message.Message.StartsWith("!unignoreme", StringComparison.CurrentCultureIgnoreCase))
+            {
+                if (!IgnoreManager.IgnoreUser(message.Username)) return;
+                IgnoreManager.RemoveIgnore(message.Username);
+                _twitchClient.SendMessage(message.Channel, $"{DbHelper.WordRandom()}! @{message.Username} PogChamp");
+                return;
+            }
+
+            // Then Check for IgnoreList
+
+            if (IgnoreManager.IgnoreUser(message.Username)) return;
 
             lock (_threadLock)
             {

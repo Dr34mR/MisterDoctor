@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Windows.Forms;
 using SubstitutionBot.Classes;
-using SubstitutionBot.Helpers;
+using SubstitutionBot.Managers;
 
 namespace SubstitutionBot.Forms
 {
-    internal partial class FormWords : Form
+    public partial class FormIgnore : Form
     {
-        public FormWords()
+        public FormIgnore()
         {
             InitializeComponent();
         }
 
-        private void FormWords_Load(object sender, EventArgs e)
+        private void FormIgnore_Load(object sender, EventArgs e)
         {
-            Text = "Substitute List";
+            Text = "Ignore User List";
 
             CancelButton = btnClose;
 
@@ -43,37 +43,45 @@ namespace SubstitutionBot.Forms
 
             gridWords.Columns[0].Visible = false;
 
-            SetWords();
+            SetUsers();
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (!(gridWords.CurrentRow?.DataBoundItem is Word word)) return;
+            if (!(gridWords.CurrentRow?.DataBoundItem is User user)) return;
 
-            var result = MessageBoxEx.Show($"Remove '{word}'?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var result = MessageBoxEx.Show($"Remove '{user}'?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result != DialogResult.Yes) return;
 
-            DbHelper.WordDelete(word);
-            SetWords();
+            IgnoreManager.RemoveIgnore(user.Username);
+            SetUsers();
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            var formAdd = new FormInput {Text = "Add Word"};
+            var formAdd = new FormInput { Text = "Add Ignored User" };
             formAdd.ShowDialog(this);
-            var returnWord = formAdd.Value;
+            var returnUser = formAdd.Value?.ToLower();
             formAdd.Dispose();
 
-            if (string.IsNullOrEmpty(returnWord)) return;
-            DbHelper.WordAdd(returnWord);
+            if (string.IsNullOrEmpty(returnUser)) return;
 
-            SetWords();
+            if (returnUser.Contains(" "))
+            {
+                MessageBoxEx.Show(this, "Username can not contain spaces", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            if (IgnoreManager.IgnoreUser(returnUser)) return;
+            IgnoreManager.AddIgnore(returnUser);
+
+            SetUsers();
         }
 
-        private void SetWords()
+        private void SetUsers()
         {
-            gridWords.DataSource = DbHelper.WordsGet();
-            if (gridWords.Columns.Count > 0 && gridWords.Columns[0].Visible) 
+            gridWords.DataSource = IgnoreManager.GetUsers();
+            if (gridWords.Columns.Count > 0 && gridWords.Columns[0].Visible)
                 gridWords.Columns[0].Visible = false;
         }
 

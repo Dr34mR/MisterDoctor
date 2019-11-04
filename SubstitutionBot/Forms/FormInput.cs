@@ -3,19 +3,17 @@ using System.Windows.Forms;
 
 namespace SubstitutionBot.Forms
 {
-    public partial class FormAddWord : Form
+    public partial class FormInput : Form
     {
-        public string Word { get; set; }
+        public string Value { get; set; }
 
-        public FormAddWord()
+        public FormInput()
         {
             InitializeComponent();
         }
 
         private void FormAddWord_Load(object sender, EventArgs e)
         {
-            Text = "Add Word";
-
             txtWord.KeyDown += txtWord_KeyDown;
 
             btnAdd.Click += btnAdd_Click;
@@ -30,20 +28,20 @@ namespace SubstitutionBot.Forms
         private void txtWord_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter) return;
-            AddWord();
+            Check();
         }
 
-        private void AddWord()
+        private void Check()
         {
             var possibleVal = txtWord.Text.ToLower().Trim();
             if (string.IsNullOrEmpty(possibleVal)) Hide();
-            Word = possibleVal;
+            Value = possibleVal;
             Hide();
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            AddWord();
+            Check();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

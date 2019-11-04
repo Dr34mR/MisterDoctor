@@ -1,6 +1,6 @@
 ﻿namespace SubstitutionBot.Forms
 {
-    partial class FormAddWord
+    partial class FormInput
     {
         /// <summary>
         /// Required designer variable.
@@ -58,7 +58,7 @@
             this.txtWord.Size = new System.Drawing.Size(220, 20);
             this.txtWord.TabIndex = 9;
             // 
-            // FormAddWord
+            // FormInput
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -69,9 +69,9 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "FormAddWord";
+            this.Name = "FormInput";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "FormAddWord";
+            this.Text = "FormInput";
             this.Load += new System.EventHandler(this.FormAddWord_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

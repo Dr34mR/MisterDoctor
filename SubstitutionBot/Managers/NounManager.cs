@@ -7,6 +7,7 @@ namespace SubstitutionBot.Managers
 {
     internal class NounManager
     {
+        private bool _initialized;
         private static NounManager Manager { get; } = new NounManager();
 
         private NounManager()
@@ -18,6 +19,8 @@ namespace SubstitutionBot.Managers
 
         internal static void Initialize()
         {
+            if (Manager._initialized) return;
+
             var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var nounFile = Path.Combine(currentDirectory, "nounlist.txt");
 
@@ -34,6 +37,8 @@ namespace SubstitutionBot.Managers
                 Manager._nouns.Add(lowerVariant);
             }
             Manager._nouns.TrimExcess();
+
+            Manager._initialized = true;
         }
 
         internal static List<int> NounIndexes(IEnumerable<string> words)

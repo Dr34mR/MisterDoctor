@@ -12,6 +12,7 @@ namespace SubstitutionBot.Helpers
         private const string CollectionTokens = "tokens";
         private const string CollectionSettings = "settings";
         private const string CollectionWords = "words";
+        private const string CollectionIgnore = "ignore";
 
         public static Token TokenGet()
         {
@@ -108,14 +109,14 @@ namespace SubstitutionBot.Helpers
             {
                 Value = word.ToLower().Trim()
             };
-
+            
             using (var db = new LiteDatabase(DbName))
             {
                 var collection = db.GetCollection<Word>(CollectionWords);
                 var existing = collection.Find(i => i.Value.Equals(word, StringComparison.CurrentCultureIgnoreCase));
                 if (existing.Any()) return;
 
-                var checkReturn = collection.Insert(objWord);
+                collection.Insert(objWord);
             }
         }
 
@@ -143,6 +144,58 @@ namespace SubstitutionBot.Helpers
             var index = rnd.Next(words.Length);
 
             return words[index];
+        }
+
+
+
+        public static User[] IgnoreGet()
+        {
+            using (var db = new LiteDatabase(DbName))
+            {
+                if (!db.CollectionExists(CollectionIgnore)) return null;
+
+                var collection = db.GetCollection<User>(CollectionIgnore);
+                return collection.FindAll().OrderBy(i => i.Username).ToArray();
+            }
+        }
+
+        public static void IgnoreAdd(string username)
+        {
+            var fixedLower = username.Trim().ToLower();
+            if (string.IsNullOrEmpty(fixedLower)) return;
+
+            var objWord = new User
+            {
+                Username = fixedLower
+            };
+
+            using (var db = new LiteDatabase(DbName))
+            {
+                var collection = db.GetCollection<User>(CollectionIgnore);
+                var existing = collection.Find(i => i.Username.Equals(fixedLower, StringComparison.CurrentCultureIgnoreCase));
+                if (existing.Any()) return;
+
+                collection.Insert(objWord);
+            }
+        }
+
+        public static void IgnoreDelete(string username)
+        {
+            if (username == null) return;
+            var fixedLower = username.ToLower().Trim();
+
+            using (var db = new LiteDatabase(DbName))
+            {
+                if (!db.CollectionExists(CollectionIgnore)) return;
+
+                var collection = db.GetCollection<User>(CollectionIgnore);
+
+                var existing = collection.Find(i => i.Username == fixedLower).ToArray();
+                if (existing.Length == 0) return;
+                var currentUser = existing.Single();
+
+                collection.Delete(currentUser.Id);
+            }
         }
     }
 }
