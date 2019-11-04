@@ -21,6 +21,7 @@ namespace SubstitutionBot.Managers
             if (Manager._initialized) return;
             
             var ignoreList = DbHelper.IgnoreGet();
+            if (ignoreList == null) return;
 
             foreach (var user in ignoreList)
             {
