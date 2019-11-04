@@ -111,6 +111,8 @@ namespace SubstitutionBot.Forms
         {
             MinimumSize = Size;
             MaximumSize = Size;
+
+            if (chkConnect.Checked) btnConnect.PerformClick();
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -259,18 +261,14 @@ namespace SubstitutionBot.Forms
 
         private void Twitch_OnConnected(object sender, OnConnectedArgs e)
         {
-            _twitchClient.SendMessage(txtChannel.Text, "Connected");
+            //_twitchClient.SendMessage(txtChannel.Text, "Connected");
         }
 
         private void Disconnect()
         {
             if (_twitchClient == null) return;
 
-            foreach (var channel in _twitchClient.JoinedChannels)
-            {
-                _twitchClient.LeaveChannel(channel);
-            }
-
+            _twitchClient.LeaveChannel(txtChannel.Text);
             _twitchClient?.Disconnect();
             _twitchClient = null;
 
