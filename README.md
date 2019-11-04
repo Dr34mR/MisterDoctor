@@ -1,5 +1,6 @@
 # Twitch Substitution Bot
 Sort of like buttsbot but single channel use and allows custom defined words and/or phrases.
+This way you can run it on your own machine, define your own words, and configure it to suit your channel.
 
 ![Screenshot](FormMain.png?raw=true "Screenshot")
 
