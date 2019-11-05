@@ -22,10 +22,12 @@ namespace SubstitutionBot.Helpers
                 if (!int.TryParse(split[2], out var build)) return false;
                 if (!int.TryParse(split[3], out var revision)) return false;
 
-                if (major > typeof(Program).Assembly.GetName().Version.Major) return true;
-                if (minor > typeof(Program).Assembly.GetName().Version.Minor) return true;
-                if (build > typeof(Program).Assembly.GetName().Version.Build) return true;
-                if (revision > typeof(Program).Assembly.GetName().Version.Revision) return true;
+                var version = typeof(Program).Assembly.GetName().Version;
+
+                if (major > version.Major) return true;
+                if (minor > version.Minor) return true;
+                if (build > version.Build) return true;
+                if (revision > version.Revision) return true;
             }
             catch { /**/ }
             return false;
