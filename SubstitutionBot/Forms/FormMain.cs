@@ -383,6 +383,7 @@ namespace SubstitutionBot.Forms
 
                 var messageParts = userMessage.Trim().Split(' ');
                 if (messageParts.Length <= 1) return;
+                if (messageParts.Length >= 10) return;
 
                 // Get the indexes of the nouns
 
