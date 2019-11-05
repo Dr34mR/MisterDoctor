@@ -4,7 +4,7 @@ This way you can run it on your own machine, define your own words, and configur
 
 ![Screenshot](FormMain.png?raw=true "Screenshot")
 
-Twitch substitution bot, once connected, will read messages in your channel and every so often replace a nominated word in a users message with a 'substitution word' or 'substitution phrase'.
+Twitch substitution bot, once connected, will read messages in your channel and every so often replace a nominated word in a users message with a randomly picked 'substitution word' or 'substitution phrase' from a list that you set.
 
 Messages are parsed using the 'nounlist.txt' for a word to replace.
 Messages that are single words are skipped regardless of noun match.
