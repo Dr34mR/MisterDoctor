@@ -63,6 +63,8 @@ namespace SubstitutionBot.Forms
             NounManager.Initialize();
             IgnoreManager.Initialize();
 
+            if (UpdateHelper.UpdateAvailable()) Text += "  [UPDATE AVAILABLE]";
+
             UpdateFormStatus();
 
             _timer.AutoReset = true;
