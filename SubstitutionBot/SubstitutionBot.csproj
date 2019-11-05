@@ -115,6 +115,7 @@
     <Compile Include="Forms\FormWords.Designer.cs">
       <DependentUpon>FormWords.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\UpdateHelper.cs" />
     <Compile Include="Managers\IgnoreManager.cs" />
     <Compile Include="Managers\NounManager.cs" />
     <Compile Include="Program.cs" />
@@ -161,7 +162,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Version.txt" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Resources\prawn.png" />
   </ItemGroup>
