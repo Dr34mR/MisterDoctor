@@ -394,8 +394,11 @@ namespace SubstitutionBot.Forms
 
                 var nounIndex = _randGenerator.Next(nounIndexes.Count);
                 messageParts[nounIndexes[nounIndex]] = DbHelper.WordRandom().Value;
-                
-                _twitchClient.SendMessage(message.Channel, string.Join(" ", messageParts));
+
+                var finalMessage = string.Join(" ", messageParts);
+                if (userMessage.Equals(finalMessage, StringComparison.CurrentCultureIgnoreCase)) return;
+
+                _twitchClient.SendMessage(message.Channel, finalMessage);
                 _coolDownTime = DateTime.Now.AddSeconds(_settings.CoolDown);
                 _procNext = false;
             }
