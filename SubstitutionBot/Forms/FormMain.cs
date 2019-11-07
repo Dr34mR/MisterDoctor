@@ -335,7 +335,7 @@ namespace SubstitutionBot.Forms
 
             // Check for command
 
-            if (message.Message.StartsWith("!ignoreme", StringComparison.CurrentCultureIgnoreCase))
+            if (message.Message.StartsWith(_settings.CommandIgnore, StringComparison.CurrentCultureIgnoreCase))
             {
                 if (IgnoreManager.IgnoreUser(message.Username)) return;
                 IgnoreManager.AddIgnore(message.Username);
@@ -343,7 +343,7 @@ namespace SubstitutionBot.Forms
                 return;
             }
 
-            if (message.Message.StartsWith("!unignoreme", StringComparison.CurrentCultureIgnoreCase))
+            if (message.Message.StartsWith(_settings.CommandUnignore, StringComparison.CurrentCultureIgnoreCase))
             {
                 if (!IgnoreManager.IgnoreUser(message.Username)) return;
                 IgnoreManager.RemoveIgnore(message.Username);

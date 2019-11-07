@@ -7,7 +7,7 @@ namespace SubstitutionBot.Classes
 {
     public class MessageParts : List<MessagePart>
     {
-        private readonly List<char> _delims = new List<char> {' ', '?', '!', ',', '.'};
+        private readonly List<char> _delims = new List<char> {' ', '?', '!', ',', '.', '\"'};
 
         public MessageParts(string message)
         {

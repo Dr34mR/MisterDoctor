@@ -82,8 +82,12 @@ namespace SubstitutionBot.Helpers
                 {
                     origSetting.ChannelName = appSetting.ChannelName;
                     origSetting.AutoConnect = appSetting.AutoConnect;
+
                     origSetting.ProcChance = appSetting.ProcChance;
                     origSetting.CoolDown = appSetting.CoolDown;
+
+                    origSetting.CommandIgnore = appSetting.CommandIgnore;
+                    origSetting.CommandUnignore = appSetting.CommandUnignore;
 
                     collection.Update(origSetting);
                 }
