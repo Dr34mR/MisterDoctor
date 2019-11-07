@@ -75,6 +75,8 @@
   <ItemGroup>
     <Compile Include="Classes\AppSettings.cs" />
     <Compile Include="Classes\MessageBoxEx.cs" />
+    <Compile Include="Classes\MessagePart.cs" />
+    <Compile Include="Classes\MessageParts.cs" />
     <Compile Include="Classes\TokenFile.cs" />
     <Compile Include="Classes\User.cs" />
     <Compile Include="Classes\Word.cs" />

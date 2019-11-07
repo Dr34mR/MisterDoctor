@@ -41,19 +41,10 @@ namespace SubstitutionBot.Managers
             Manager._initialized = true;
         }
 
-        internal static List<int> NounIndexes(IEnumerable<string> words)
+        internal static bool IsNoun(string word)
         {
-            var currentIndex = 0;
-            var returnIndexes = new List<int>();
-
-            foreach (var word in words)
-            {
-                var lowerVariant = word.ToLower();
-                if (Manager._nouns.Contains(lowerVariant)) returnIndexes.Add(currentIndex);
-                currentIndex += 1;
-            }
-
-            return returnIndexes;
+            var modded = word.ToLower().Trim();
+            return !string.IsNullOrEmpty(modded) && Manager._nouns.Contains(modded);
         }
     }
 }

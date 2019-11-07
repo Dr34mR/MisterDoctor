@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
@@ -365,11 +364,9 @@ namespace SubstitutionBot.Forms
                     _coolDownTime = null;
                 }
 
-                // Min is Inclisive
-                // Max is Exclusive
-
                 if (!_procNext)
                 {
+                    // Min is Inclisive / Max is Exclusive
                     var newValue = _randGenerator.Next(1, 101); // 1 to 100
                     if (newValue > _settings.ProcChance) return;
                 }
@@ -381,26 +378,26 @@ namespace SubstitutionBot.Forms
                 var userMessage = message.Message.Trim();
                 if (string.IsNullOrEmpty(userMessage)) return;
 
-                // Split the message into words
+                var parts = new MessageParts(userMessage);
 
-                var messageParts = userMessage.Trim().Split(' ');
-                if (messageParts.Length <= 1) return;
-                if (messageParts.Length >= 10) return;
+                var wordCount = parts.WordCount();
+                if (wordCount < 1) return;
+                if (wordCount > 12) return; 
 
                 // Get the indexes of the nouns
 
-                var nounIndexes = NounManager.NounIndexes(messageParts);
-                if (!nounIndexes.Any()) return;
-
+                if (!parts.HasNoun()) return;
+                var nounIndexes = parts.NounIndexes();
+                
                 // Randomly pick a noun index
 
-                var nounIndex = _randGenerator.Next(nounIndexes.Count);
-                messageParts[nounIndexes[nounIndex]] = DbHelper.WordRandom().Value;
+                var replaceIndex = _randGenerator.Next(nounIndexes.Count);
+                parts.ReplaceWord(nounIndexes[replaceIndex], DbHelper.WordRandom().Value);
 
-                var finalMessage = string.Join(" ", messageParts);
-                if (userMessage.Equals(finalMessage, StringComparison.CurrentCultureIgnoreCase)) return;
+                var messageToSend = parts.ToString();
+                if (userMessage.Equals(messageToSend, StringComparison.CurrentCultureIgnoreCase)) return;
 
-                _twitchClient.SendMessage(message.Channel, finalMessage);
+                _twitchClient.SendMessage(message.Channel, messageToSend);
                 _coolDownTime = DateTime.Now.AddSeconds(_settings.CoolDown);
                 _procNext = false;
             }
