@@ -24,7 +24,7 @@ namespace MisterDoctor.Forms
 
         private static void linkGithub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("https://github.com/Dr34mR/TwitchSubstitutionBot");
+            Process.Start("https://github.com/Dr34mR/MisterDoctor");
         }
     }
 }

@@ -47,7 +47,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackgroundImage = global::SubstitutionBot.Properties.Resources.prawn;
+            this.pictureBox1.BackgroundImage = global::MisterDoctor.Properties.Resources.prawn;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.pictureBox1.Location = new System.Drawing.Point(12, 9);
             this.pictureBox1.Name = "pictureBox1";
@@ -61,9 +61,9 @@
             this.lblAbout.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAbout.Location = new System.Drawing.Point(108, 9);
             this.lblAbout.Name = "lblAbout";
-            this.lblAbout.Size = new System.Drawing.Size(254, 25);
+            this.lblAbout.Size = new System.Drawing.Size(153, 25);
             this.lblAbout.TabIndex = 2;
-            this.lblAbout.Text = "Twitch Substitution Bot";
+            this.lblAbout.Text = "Mister Doctor";
             // 
             // linkGithub
             // 

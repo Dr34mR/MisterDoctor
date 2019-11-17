@@ -49,17 +49,9 @@
       <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
     <Reference Include="TwitchLib.Client, Version=3.1.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TwitchLib.Client.3.1.4\lib\netstandard2.0\TwitchLib.Client.dll</HintPath>
     </Reference>
@@ -120,7 +112,6 @@
     </Compile>
     <Compile Include="Helpers\UpdateHelper.cs" />
     <Compile Include="Managers\IgnoreManager.cs" />
-    <Compile Include="Managers\ModuleManager.cs" />
     <Compile Include="Managers\NounManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -174,12 +165,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\favicon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Component\TwitchModule.csproj">
-      <Project>{cc807194-846d-4de0-9dfa-6dc01b0b065d}</Project>
-      <Name>TwitchModule</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.0.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.0\build\Fody.targets')" />

@@ -42,7 +42,7 @@ namespace MisterDoctor.Forms
 
             statusStrip.SizingGrip = false;
 
-            Text = "Twitch Substitution Bot";
+            Text = "Mister Doctor";
 
             tokenToolStripMenuItem.Click += tokenMenu_Click;
             wordListToolStripMenuItem.Click += wordMenu_Click;
