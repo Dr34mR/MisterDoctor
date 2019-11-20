@@ -13,6 +13,10 @@
         public string CommandIgnore { get; set; } = "!ignoreme";
         public string CommandUnignore { get; set; } = "!unignoreme";
 
+        public string GoodBot { get; set; } = "( ͡° ͜ʖ ͡°)";
+
+        public string BadBot { get; set; } = "ಥ_ಥ";
+
         public override string ToString()
         {
             return $"{Id} {ChannelName}";

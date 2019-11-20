@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
@@ -381,19 +382,33 @@ namespace MisterDoctor.Forms
             {
                 // First check for a word in the message
 
-                var messageToSend = PhraseCheck(parts);
+                var send = GoodBadCheck(parts, _twitchClient.TwitchUsername);
 
-                // Fall back to a Random Word Replace Proc
+                if (string.IsNullOrEmpty(send)) send = PhraseCheck(parts);
+                if (string.IsNullOrEmpty(send)) send = RandomReplace(parts);
+                if (string.IsNullOrEmpty(send)) return;
 
-                if (string.IsNullOrEmpty(messageToSend))
-                {
-                    messageToSend = RandomReplace(parts);
-                }
-
-                if (string.IsNullOrEmpty(messageToSend)) return;
-
-                _twitchClient.SendMessage(message.Channel, messageToSend);
+                _twitchClient.SendMessage(message.Channel, send);
             }
+        }
+
+        private string GoodBadCheck(MessageParts parts, string botName)
+        {
+            var happy = new[] {"yes", "goodbot", "plz", "nice"};
+            var sad = new[] {"no", "badbot", "why", "stop"};
+
+            var wordsOnly = parts.Where(i => i.IsWord).Select(i => i.Value.ToLower()).ToList();
+            if (wordsOnly.Count != 2) return string.Empty;
+
+            // Bot Check
+
+            if (!wordsOnly.Any(i => i.Equals(botName.ToLower()))) return string.Empty;
+
+            // Now check for happy or sad
+
+            if (wordsOnly.Intersect(happy).Any()) return _settings.GoodBot;
+
+            return wordsOnly.Intersect(sad).Any() ? _settings.BadBot : string.Empty;
         }
 
         private static string PhraseCheck(MessageParts parts)
