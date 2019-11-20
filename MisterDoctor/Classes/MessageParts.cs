@@ -50,7 +50,7 @@ namespace MisterDoctor.Classes
                 {
                     Value = value,
                     IsNoun = NounManager.IsNoun(value), 
-                    IsWord = value.Any(char.IsLetterOrDigit)
+                    IsWord = value.All(char.IsLetter)
                 });
             }
         }

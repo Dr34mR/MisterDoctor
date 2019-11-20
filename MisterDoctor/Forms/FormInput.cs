@@ -44,7 +44,11 @@ namespace MisterDoctor.Forms
         private void Check()
         {
             var possibleVal = txtWord.Text.Trim();
-            if (string.IsNullOrEmpty(possibleVal)) Hide();
+            if (string.IsNullOrEmpty(possibleVal))
+            {
+                Hide();
+                return;
+            }
             Value = possibleVal;
             Hide();
         }

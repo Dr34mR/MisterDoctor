@@ -45,6 +45,7 @@
             this.btnUpdate = new System.Windows.Forms.Button();
             this.lblProc = new System.Windows.Forms.Label();
             this.txtProc = new System.Windows.Forms.TextBox();
+            this.phrasesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -54,6 +55,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tokenToolStripMenuItem,
             this.wordListToolStripMenuItem,
+            this.phrasesToolStripMenuItem,
             this.ignoreToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -196,6 +198,12 @@
             this.txtProc.Size = new System.Drawing.Size(173, 20);
             this.txtProc.TabIndex = 3;
             // 
+            // phrasesToolStripMenuItem
+            // 
+            this.phrasesToolStripMenuItem.Name = "phrasesToolStripMenuItem";
+            this.phrasesToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
+            this.phrasesToolStripMenuItem.Text = "Phrases";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -248,6 +256,7 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel stripCooldown;
         private System.Windows.Forms.ToolStripMenuItem ignoreToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem phrasesToolStripMenuItem;
     }
 }
 

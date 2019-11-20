@@ -13,6 +13,7 @@ namespace MisterDoctor.Helpers
         private const string CollectionSettings = "settings";
         private const string CollectionWords = "words";
         private const string CollectionIgnore = "ignore";
+        private const string CollectionSubstitution = "subs";
 
         public static Token TokenGet()
         {
@@ -117,7 +118,7 @@ namespace MisterDoctor.Helpers
             using (var db = new LiteDatabase(DbName))
             {
                 var collection = db.GetCollection<Word>(CollectionWords);
-                var existing = collection.Find(i => i.Value.Equals(word, StringComparison.CurrentCultureIgnoreCase));
+                var existing = collection.Find(i => i.Value.Equals(word.Trim(), StringComparison.CurrentCultureIgnoreCase));
                 if (existing.Any()) return;
 
                 collection.Insert(objWord);
@@ -199,6 +200,51 @@ namespace MisterDoctor.Helpers
                 var currentUser = existing.Single();
 
                 collection.Delete(currentUser.Id);
+            }
+        }
+
+        public static Substitution[] SubstitutionsGet()
+        {
+            using (var db = new LiteDatabase(DbName))
+            {
+                if (!db.CollectionExists(CollectionSubstitution)) return null;
+
+                var collection = db.GetCollection<Substitution>(CollectionSubstitution);
+                return collection.FindAll().OrderBy(i => i.Find).ToArray();
+            }
+        }
+
+        public static void SubstitutionAdd(string find, string reply)
+        {
+            if (string.IsNullOrEmpty(find.Trim())) return;
+            if (string.IsNullOrEmpty(reply.Trim())) return;
+
+            var sub = new Substitution
+            {
+                Find = find.ToLower().Trim(),
+                Reply = reply.Trim()
+            };
+
+            using (var db = new LiteDatabase(DbName))
+            {
+                var collection = db.GetCollection<Substitution>(CollectionSubstitution);
+                var existing = collection.Find(i => i.Find.Equals(find.Trim(), StringComparison.CurrentCultureIgnoreCase));
+                if (existing.Any()) return;
+
+                collection.Insert(sub);
+            }
+        }
+
+        public static void SubstitutionDelete(Substitution substitution)
+        {
+            if (substitution == null) return;
+
+            using (var db = new LiteDatabase(DbName))
+            {
+                if (!db.CollectionExists(CollectionSubstitution)) return;
+
+                var collection = db.GetCollection<Substitution>(CollectionSubstitution);
+                collection.Delete(substitution.Id);
             }
         }
     }

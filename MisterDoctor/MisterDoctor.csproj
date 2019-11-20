@@ -50,8 +50,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
     <Reference Include="TwitchLib.Client, Version=3.1.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TwitchLib.Client.3.1.4\lib\netstandard2.0\TwitchLib.Client.dll</HintPath>
     </Reference>
@@ -70,6 +72,7 @@
     <Compile Include="Classes\MessageBoxEx.cs" />
     <Compile Include="Classes\MessagePart.cs" />
     <Compile Include="Classes\MessageParts.cs" />
+    <Compile Include="Classes\Substitution.cs" />
     <Compile Include="Classes\TokenFile.cs" />
     <Compile Include="Classes\User.cs" />
     <Compile Include="Classes\Word.cs" />
@@ -90,6 +93,18 @@
     </Compile>
     <Compile Include="Forms\FormInput.Designer.cs">
       <DependentUpon>FormInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormPhrases.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormPhrases.Designer.cs">
+      <DependentUpon>FormPhrases.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormPhrasesNew.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormPhrasesNew.Designer.cs">
+      <DependentUpon>FormPhrasesNew.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\DbHelper.cs" />
     <Compile Include="Forms\FormMain.cs">
@@ -113,6 +128,7 @@
     <Compile Include="Helpers\UpdateHelper.cs" />
     <Compile Include="Managers\IgnoreManager.cs" />
     <Compile Include="Managers\NounManager.cs" />
+    <Compile Include="Managers\PhraseManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\FormAbout.resx">
@@ -126,6 +142,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPhrases.resx">
+      <DependentUpon>FormPhrases.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPhrasesNew.resx">
+      <DependentUpon>FormPhrasesNew.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormToken.resx">
       <DependentUpon>FormToken.cs</DependentUpon>

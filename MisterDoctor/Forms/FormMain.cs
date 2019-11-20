@@ -46,9 +46,10 @@ namespace MisterDoctor.Forms
 
             tokenToolStripMenuItem.Click += tokenMenu_Click;
             wordListToolStripMenuItem.Click += wordMenu_Click;
+            phrasesToolStripMenuItem.Click += phraseMenu_Click;
             ignoreToolStripMenuItem.Click += ignoreMenu_Click;
             aboutToolStripMenuItem.Click += aboutMenu_Click;
-
+            
             btnUpdate.Click += btnUpdate_Click;
 
             txtChannel.TextChanged += txtChannel_TextChanged;
@@ -61,6 +62,7 @@ namespace MisterDoctor.Forms
 
             NounManager.Initialize();
             IgnoreManager.Initialize();
+            PhraseManager.Initialize();
 
             if (UpdateHelper.UpdateAvailable()) Text += "  [UPDATE AVAILABLE]";
 
@@ -70,7 +72,7 @@ namespace MisterDoctor.Forms
             _timer.Elapsed += timer_Elapsed;
             _timer.Start();
         }
-
+        
         private void FormMain_Load(object sender, EventArgs e)
         {
             MinimumSize = Size;
@@ -102,6 +104,13 @@ namespace MisterDoctor.Forms
         private void wordMenu_Click(object sender, EventArgs e)
         {
             ShowWords();
+        }
+
+        private void phraseMenu_Click(object sender, EventArgs e)
+        {
+            var phrasesForm = new FormPhrases();
+            phrasesForm.ShowDialog(this);
+            phrasesForm.Dispose();
         }
 
         private void ignoreMenu_Click(object sender, EventArgs e)
@@ -355,52 +364,80 @@ namespace MisterDoctor.Forms
 
             if (IgnoreManager.IgnoreUser(message.Username)) return;
 
+            // Digest message
+
+            var userMessage = message.Message.Trim();
+            if (string.IsNullOrEmpty(userMessage)) return;
+
+            var parts = new MessageParts(userMessage);
+
+            var wordCount = parts.WordCount();
+            if (wordCount < 1) return;
+            if (wordCount > 12) return;
+
+            // Now do the lock and checking
+
             lock (_threadLock)
             {
-                // Cooldown ?
-                if (_coolDownTime.HasValue)
+                // First check for a word in the message
+
+                var messageToSend = PhraseCheck(parts);
+
+                // Fall back to a Random Word Replace Proc
+
+                if (string.IsNullOrEmpty(messageToSend))
                 {
-                    if (_coolDownTime > DateTime.Now) return;
-                    _coolDownTime = null;
+                    messageToSend = RandomReplace(parts);
                 }
 
-                if (!_procNext)
-                {
-                    // Min is Inclisive / Max is Exclusive
-                    var newValue = _randGenerator.Next(1, 101); // 1 to 100
-                    if (newValue > _settings.ProcChance) return;
-                }
-                
-                // Sanity Checks on message
-
-                _procNext = true;
-
-                var userMessage = message.Message.Trim();
-                if (string.IsNullOrEmpty(userMessage)) return;
-
-                var parts = new MessageParts(userMessage);
-
-                var wordCount = parts.WordCount();
-                if (wordCount < 1) return;
-                if (wordCount > 12) return; 
-
-                // Get the indexes of the nouns
-
-                if (!parts.HasNoun()) return;
-                var nounIndexes = parts.NounIndexes();
-                
-                // Randomly pick a noun index
-
-                var replaceIndex = _randGenerator.Next(nounIndexes.Count);
-                parts.ReplaceWord(nounIndexes[replaceIndex], DbHelper.WordRandom().Value);
-
-                var messageToSend = parts.ToString();
-                if (userMessage.Equals(messageToSend, StringComparison.CurrentCultureIgnoreCase)) return;
+                if (string.IsNullOrEmpty(messageToSend)) return;
 
                 _twitchClient.SendMessage(message.Channel, messageToSend);
-                _coolDownTime = DateTime.Now.AddSeconds(_settings.CoolDown);
-                _procNext = false;
             }
+        }
+
+        private static string PhraseCheck(MessageParts parts)
+        {
+            return PhraseManager.CheckMessage(parts);
+        }
+
+        private string RandomReplace(MessageParts parts)
+        {
+            // Cooldown ?
+            if (_coolDownTime.HasValue)
+            {
+                if (_coolDownTime > DateTime.Now) return string.Empty;
+                _coolDownTime = null;
+            }
+
+            if (!_procNext)
+            {
+                // Min is Inclisive / Max is Exclusive
+                var newValue = _randGenerator.Next(1, 101); // 1 to 100
+                if (newValue > _settings.ProcChance) return string.Empty;
+            }
+
+            // If we passed the 'Random Check' then make sure it triggers next time
+
+            _procNext = true;
+
+            // Get the indexes of the nouns
+
+            if (!parts.HasNoun()) return string.Empty;
+            var nounIndexes = parts.NounIndexes();
+
+            // Randomly pick a noun index
+
+            var replaceIndex = _randGenerator.Next(nounIndexes.Count);
+            parts.ReplaceWord(nounIndexes[replaceIndex], DbHelper.WordRandom().Value);
+
+            var messageToSend = parts.ToString();
+            if (parts.ToString().Equals(messageToSend, StringComparison.CurrentCultureIgnoreCase)) return string.Empty;
+            
+            _procNext = false;
+            _coolDownTime = DateTime.Now.AddSeconds(_settings.CoolDown);
+
+            return messageToSend;
         }
     }
 }

@@ -39,7 +39,7 @@
             // lblIconAbout
             // 
             this.lblIconAbout.AutoSize = true;
-            this.lblIconAbout.Location = new System.Drawing.Point(115, 34);
+            this.lblIconAbout.Location = new System.Drawing.Point(111, 34);
             this.lblIconAbout.Name = "lblIconAbout";
             this.lblIconAbout.Size = new System.Drawing.Size(189, 13);
             this.lblIconAbout.TabIndex = 0;
