@@ -5,7 +5,7 @@ Mister Doctor is a modular twitch bot built to be extensible with each individua
 Mister Doctor started off as a single bot (substitution) and grew to encompass other bot functionalities as they became desired.
 
 Things Mister Doctor does:
-- Random noun substitution. If a noun is found and a % chance is met, a random noun will be replaced with a word in a wordlist that you set. Like [buttsbot](twitch.tv/buttsbot) but more flexible. Noun list is able to be expanded to or retracted from as required.
+- Random noun substitution. If a noun is found and a % chance is met, a random noun will be replaced with a word in a wordlist that you set. Like [buttsbot](http://twitch.tv/buttsbot) but more flexible. Noun list is able to be expanded to or retracted from as required.
 
      - User - I'm going to grab a can of drink
      - Bot - I'm going to grab a xxxx of drink
