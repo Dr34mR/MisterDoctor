@@ -395,7 +395,7 @@ namespace MisterDoctor.Forms
         private string GoodBadCheck(MessageParts parts, string botName)
         {
             var happy = new[] {"yes", "goodbot", "plz", "nice"};
-            var sad = new[] {"no", "badbot", "why", "stop"};
+            var sad = new[] {"no", "badbot", "why", "bad"};
 
             var wordsOnly = parts.Where(i => i.IsWord).Select(i => i.Value.ToLower()).ToList();
             if (wordsOnly.Count != 2) return string.Empty;
