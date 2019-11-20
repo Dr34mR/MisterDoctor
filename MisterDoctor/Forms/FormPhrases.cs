@@ -79,7 +79,7 @@ namespace MisterDoctor.Forms
             if (gridWords.Columns.Count > 0 && gridWords.Columns[0].Visible)
                 gridWords.Columns[0].Visible = false;
 
-            gridWords.Columns[1].Width = 100;
+            if (gridWords.Columns.Count > 1) gridWords.Columns[1].Width = 100;
         }
     }
 }
