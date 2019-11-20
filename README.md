@@ -17,6 +17,8 @@ Things Mister Doctor does:
      
 - **Ability to Ignore users.** Great so bots don't chat with each other and so users who do not like the bot will not have their messages responded to.
 
+- **Punctuation Awareness.** Words! With, punctuation. Are? Still considered. For both! Phrases, and Substitution.
+
 ![Screenshot](FormMain.png?raw=true "Screenshot")
 
 [Download Page](https://github.com/Dr34mR/MisterDoctor/releases)
