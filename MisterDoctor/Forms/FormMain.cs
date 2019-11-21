@@ -443,11 +443,13 @@ namespace MisterDoctor.Forms
 
             // Randomly pick a noun index
 
+            var originalMessage = parts.ToString();
+
             var replaceIndex = _randGenerator.Next(nounIndexes.Count);
             parts.ReplaceWord(nounIndexes[replaceIndex], DbHelper.WordRandom().Value);
 
             var messageToSend = parts.ToString();
-            if (parts.ToString().Equals(messageToSend, StringComparison.CurrentCultureIgnoreCase)) return string.Empty;
+            if (originalMessage.Equals(messageToSend, StringComparison.CurrentCultureIgnoreCase)) return string.Empty;
             
             _procNext = false;
             _coolDownTime = DateTime.Now.AddSeconds(_settings.CoolDown);
