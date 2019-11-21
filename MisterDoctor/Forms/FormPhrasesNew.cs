@@ -50,7 +50,7 @@ namespace MisterDoctor.Forms
 
             if (cleanFind.Contains(" "))
             {
-                MessageBox.Show("Can only look for single words", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBoxEx.Show("Can only look for single words", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 

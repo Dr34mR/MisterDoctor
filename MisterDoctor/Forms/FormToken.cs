@@ -56,19 +56,19 @@ namespace MisterDoctor.Forms
 
             if (string.IsNullOrEmpty(cleanName))
             {
-                MessageBox.Show(this, $"{lblUsername.Text} can not be blank");
+                MessageBoxEx.Show(this, $"{lblUsername.Text} can not be blank");
                 return;
             }
 
             if (string.IsNullOrEmpty(cleanOKey))
             {
-                MessageBox.Show(this, $"{lblOAuth.Text} can not be blank");
+                MessageBoxEx.Show(this, $"{lblOAuth.Text} can not be blank");
                 return;
             }
 
             if (!cleanOKey.StartsWith("oauth:", StringComparison.CurrentCultureIgnoreCase))
             {
-                MessageBox.Show(this, $"{lblUsername.Text} must start with 'oauth:'");
+                MessageBoxEx.Show(this, $"{lblUsername.Text} must start with 'oauth:'");
                 return;
             }
             

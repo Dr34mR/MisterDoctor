@@ -19,6 +19,13 @@ Things Mister Doctor does:
 
 - **Punctuation Awareness.** Words! With, punctuation. Are? Still considered. For both! Phrases, and Substitution.
 
+- **GoodBot Badbot Responses.** 
+
+     - If a user writes 'botname' + a goodbot word (yes, goodbot, plz, nice) will respond with a custom message you define. 
+	 - If a user writes 'botname' + a badbot word (no, badbot, why, bad) will respond with a custom message you define.
+	 
+- **Settings.** Configurable ignore and unignore commands as well as max message words to ensure large messages are not spammed.
+
 ![Screenshot](FormMain.png?raw=true "Screenshot")
 
 [Download Page](https://github.com/Dr34mR/MisterDoctor/releases)

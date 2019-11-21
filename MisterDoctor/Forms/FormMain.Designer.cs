@@ -31,6 +31,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.tokenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wordListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.phrasesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ignoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lblConnect = new System.Windows.Forms.Label();
@@ -45,7 +46,7 @@
             this.btnUpdate = new System.Windows.Forms.Button();
             this.lblProc = new System.Windows.Forms.Label();
             this.txtProc = new System.Windows.Forms.TextBox();
-            this.phrasesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -57,6 +58,7 @@
             this.wordListToolStripMenuItem,
             this.phrasesToolStripMenuItem,
             this.ignoreToolStripMenuItem,
+            this.settingsToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -75,6 +77,12 @@
             this.wordListToolStripMenuItem.Name = "wordListToolStripMenuItem";
             this.wordListToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
             this.wordListToolStripMenuItem.Text = "Word List";
+            // 
+            // phrasesToolStripMenuItem
+            // 
+            this.phrasesToolStripMenuItem.Name = "phrasesToolStripMenuItem";
+            this.phrasesToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
+            this.phrasesToolStripMenuItem.Text = "Phrases";
             // 
             // ignoreToolStripMenuItem
             // 
@@ -198,11 +206,11 @@
             this.txtProc.Size = new System.Drawing.Size(173, 20);
             this.txtProc.TabIndex = 3;
             // 
-            // phrasesToolStripMenuItem
+            // settingsToolStripMenuItem
             // 
-            this.phrasesToolStripMenuItem.Name = "phrasesToolStripMenuItem";
-            this.phrasesToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
-            this.phrasesToolStripMenuItem.Text = "Phrases";
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.settingsToolStripMenuItem.Text = "Settings";
             // 
             // FormMain
             // 
@@ -257,6 +265,7 @@
         private System.Windows.Forms.ToolStripStatusLabel stripCooldown;
         private System.Windows.Forms.ToolStripMenuItem ignoreToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem phrasesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
     }
 }
 

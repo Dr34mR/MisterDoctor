@@ -14,7 +14,7 @@ namespace MisterDoctor.Forms
 
         private void FormWords_Load(object sender, EventArgs e)
         {
-            Text = "Substitute List";
+            Text = "Word Substitution List";
 
             CancelButton = btnClose;
 

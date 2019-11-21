@@ -10,6 +10,8 @@
         public int ProcChance { get; set; } = 8;
         public int CoolDown { get; set; } = 30;
 
+        public int MaxMessageSize { get; set; } = 12;
+
         public string CommandIgnore { get; set; } = "!ignoreme";
         public string CommandUnignore { get; set; } = "!unignoreme";
 

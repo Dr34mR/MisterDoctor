@@ -87,8 +87,13 @@ namespace MisterDoctor.Helpers
                     origSetting.ProcChance = appSetting.ProcChance;
                     origSetting.CoolDown = appSetting.CoolDown;
 
+                    origSetting.MaxMessageSize = appSetting.MaxMessageSize;
+
                     origSetting.CommandIgnore = appSetting.CommandIgnore;
                     origSetting.CommandUnignore = appSetting.CommandUnignore;
+
+                    origSetting.GoodBot = appSetting.GoodBot;
+                    origSetting.BadBot = appSetting.BadBot;
 
                     collection.Update(origSetting);
                 }

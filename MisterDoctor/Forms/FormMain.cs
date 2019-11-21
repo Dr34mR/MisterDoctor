@@ -49,6 +49,7 @@ namespace MisterDoctor.Forms
             wordListToolStripMenuItem.Click += wordMenu_Click;
             phrasesToolStripMenuItem.Click += phraseMenu_Click;
             ignoreToolStripMenuItem.Click += ignoreMenu_Click;
+            settingsToolStripMenuItem.Click += settingsMenu_Click;
             aboutToolStripMenuItem.Click += aboutMenu_Click;
             
             btnUpdate.Click += btnUpdate_Click;
@@ -126,6 +127,16 @@ namespace MisterDoctor.Forms
             using (var aboutForm = new FormAbout())
             {
                 aboutForm.ShowDialog(this);
+            }
+        }
+
+        private void settingsMenu_Click(object sender, EventArgs e)
+        {
+            using (var settingsForm = new FormSettings())
+            {
+                settingsForm.Settings = _settings;
+                settingsForm.ShowDialog(this);
+                if (!settingsForm.Cancelled) DbHelper.AppSettingsSet(_settings);
             }
         }
 
@@ -374,7 +385,7 @@ namespace MisterDoctor.Forms
 
             var wordCount = parts.WordCount();
             if (wordCount < 1) return;
-            if (wordCount > 12) return;
+            if (wordCount > _settings.MaxMessageSize) return;
 
             // Now do the lock and checking
 
