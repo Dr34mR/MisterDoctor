@@ -17,7 +17,7 @@ Things Mister Doctor does:
      - ***User*** - Have you heard from joe latley?
      - ***Bot*** - Joe Momma!
      
-- **Wildcards.** If a message reply contains one of the following wildcards it will be replaced accordingly.
+- **Wildcards.** If a message reply contains one of the following wildcards it will be replaced accordingly. This was built to allow the 'phrase' detection have the bot reply with "/timeout $user 5 How about no" when stream sensitive words were mentioned.
      
      - ***$user*** - Will be replaced with the user who the bot is replying to
      - ***$channel*** - Will be replaved with the streamers channel name
