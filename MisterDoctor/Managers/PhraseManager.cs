@@ -60,7 +60,7 @@ namespace MisterDoctor.Managers
             return DbHelper.SubstitutionsGet();
         }
 
-        internal static string CheckMessage(MessageParts message)
+        internal static string CheckMessage(MessageParts message, string username)
         {
             if (message == null) return string.Empty;
 

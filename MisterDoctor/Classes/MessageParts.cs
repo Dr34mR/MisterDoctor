@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MisterDoctor.Managers;
+using TwitchLib.Client.Models;
 
 namespace MisterDoctor.Classes
 {
@@ -94,6 +96,23 @@ namespace MisterDoctor.Classes
         public int WordCount()
         {
             return this.Count(i => i.IsWord);
+        }
+        public void UpdateWildcards(ChatMessage message)
+        {
+            var dict = new Dictionary<string, string>
+            {
+                {"$user", message.Username},
+                {"$channel", message.Channel},
+                {"$bot", message.BotUsername},
+                {"$time", DateTime.Now.ToString("h:mm tt")},
+                {"$day", DateTime.Now.ToString("d")},
+            };
+
+            foreach (var thing in this)
+            {
+                if (!dict.TryGetValue(thing.Value.ToLower(), out var replace)) continue;
+                thing.Value = replace;
+            }
         }
     }
 }

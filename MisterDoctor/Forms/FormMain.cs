@@ -384,7 +384,7 @@ namespace MisterDoctor.Forms
             var parts = new MessageParts(userMessage);
 
             var wordCount = parts.WordCount();
-            if (wordCount < 1) return;
+            if (wordCount <= 1) return;
             if (wordCount > _settings.MaxMessageSize) return;
 
             // Now do the lock and checking
@@ -395,11 +395,14 @@ namespace MisterDoctor.Forms
 
                 var send = GoodBadCheck(parts, _twitchClient.TwitchUsername);
 
-                if (string.IsNullOrEmpty(send)) send = PhraseCheck(parts);
+                if (string.IsNullOrEmpty(send)) send = PhraseCheck(parts, message.Username);
                 if (string.IsNullOrEmpty(send)) send = RandomReplace(parts);
                 if (string.IsNullOrEmpty(send)) return;
 
-                _twitchClient.SendMessage(message.Channel, send);
+                var sendParts = new MessageParts(send);
+                sendParts.UpdateWildcards(message);
+
+                _twitchClient.SendMessage(message.Channel, sendParts.ToString());
             }
         }
 
@@ -422,9 +425,9 @@ namespace MisterDoctor.Forms
             return wordsOnly.Intersect(sad).Any() ? _settings.BadBot : string.Empty;
         }
 
-        private static string PhraseCheck(MessageParts parts)
+        private static string PhraseCheck(MessageParts parts, string username)
         {
-            return PhraseManager.CheckMessage(parts);
+            return PhraseManager.CheckMessage(parts, username);
         }
 
         private string RandomReplace(MessageParts parts)
