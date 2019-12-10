@@ -4,6 +4,8 @@ Mister Doctor is a modular twitch bot built to be extensible with each individua
 
 Mister Doctor started off as a single bot (substitution) and grew to encompass other bot functionalities as they became desired.
 
+![Screenshot](FormMain.png?raw=true "Screenshot")
+
 Things Mister Doctor does:
 - **Random noun substitution**. If a noun is found and a % chance is met, a random noun will be replaced with a word or series of words in a wordlist that you set. Like [buttsbot](http://twitch.tv/buttsbot) but more flexible and with higher accuracy of appropriate substitution. Noun list is able to be expanded to or retracted from as required. Global cooldown between messages applies.
 
@@ -25,8 +27,6 @@ Things Mister Doctor does:
 	 - If a user writes 'botname' + a badbot word (no, badbot, why, bad) will respond with a custom message you define.
 	 
 - **Settings.** Configurable ignore and unignore commands as well as max message words to ensure large messages are not spammed.
-
-![Screenshot](FormMain.png?raw=true "Screenshot")
 
 [Download Page](https://github.com/Dr34mR/MisterDoctor/releases)
 
