@@ -20,10 +20,10 @@ Things Mister Doctor does:
 - **Wildcards.** If a message reply contains one of the following wildcards it will be replaced accordingly. This was built to allow the 'phrase' detection have the bot reply with "/timeout $user 5 How about no" when stream sensitive words were mentioned.
      
      - ***$user*** - Will be replaced with the user who the bot is replying to
-     - ***$channel*** - Will be replaved with the streamers channel name
+     - ***$channel*** - Will be replaced with the streamers channel name
      - ***$bot*** - Will be replaced with the bots username
      - ***$time*** - Will be replaced with the bots current local time (h:mm AM/PM)
-     - ***$day*** - Will be replaved with the bots local date (d/mm/yyyy or mm/d/yyyy depending on your pc date)
+     - ***$day*** - Will be replaced with the bots local date (d/mm/yyyy or mm/d/yyyy depending on your pc date)
      
 - **Ability to Ignore users.** Great so bots don't chat with each other and so users who do not like the bot will not have their messages responded to.
 
