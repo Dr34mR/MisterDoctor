@@ -47,6 +47,7 @@ namespace MisterDoctor.Helpers
                 {
                     origToken.Username = token.Username;
                     origToken.UserOAuthKey = token.UserOAuthKey;
+                    origToken.ClientId = token.ClientId;
 
                     collection.Update(origToken);
                 }

@@ -23,11 +23,13 @@ namespace MisterDoctor.Forms
             {
                 txtUsername.Text = Token.Username;
                 txtOAuth.Text = Token.UserOAuthKey;
+                txtClientId.Text = Token.ClientId;
             }
 
             CancelButton = btnCancel;
 
             lnkGetOAuth.LinkClicked += lnkGetOAuth_LinkClicked;
+            lnkGetClient.LinkClicked += lnkGetClient_LinkClicked;
             btnSave.Click += btnSave_Click;
             btnCancel.Click += btnCancel_Click;
 
@@ -35,6 +37,11 @@ namespace MisterDoctor.Forms
             txtOAuth.TextChanged += Text_Changed;
             
             ToggleSave();
+        }
+
+        private static void lnkGetClient_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://dev.twitch.tv/console/apps/");
         }
 
         private static void lnkGetOAuth_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -77,7 +84,8 @@ namespace MisterDoctor.Forms
             Token = new Token
             {
                 Username = txtUsername.Text.Trim(),
-                UserOAuthKey = txtOAuth.Text.Trim()
+                UserOAuthKey = txtOAuth.Text.Trim(),
+                ClientId = txtClientId.Text.Trim()
             };
 
             Save = true;

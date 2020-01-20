@@ -6,7 +6,9 @@
 
         public string Username { get; set; }
         public string UserOAuthKey { get; set; }
-
+        
+        public string ClientId { get; set; }
+        
         public override string ToString()
         {
             return $"{Id} - {Username}";

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
@@ -8,6 +9,8 @@ using MisterDoctor.Classes;
 using MisterDoctor.Helpers;
 using MisterDoctor.Managers;
 using MisterDoctor.Properties;
+using Newtonsoft.Json.Linq;
+using RestSharp;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
@@ -27,6 +30,8 @@ namespace MisterDoctor.Forms
         private readonly Timer _timer = new Timer(1000);
         private bool _procNext;
         private bool _closing;
+
+        private string _channelId = string.Empty;
 
         public FormMain()
         {
@@ -294,6 +299,13 @@ namespace MisterDoctor.Forms
                 return;
             }
 
+            if (string.IsNullOrEmpty(token.ClientId))
+            {
+                ShowError("No Client ID");
+                ShowToken();
+                return;
+            }
+
             if (DbHelper.WordRandom() == null)
             {
                 ShowError("No Substitution Words Set");
@@ -353,7 +365,7 @@ namespace MisterDoctor.Forms
             if (message == null) return;
             if (message.IsMe) return;
             if (message.Username.Equals(_twitchClient.TwitchUsername, StringComparison.CurrentCultureIgnoreCase)) return;
-
+            
             // Check for command
 
             if (message.Message.StartsWith(_settings.CommandIgnore, StringComparison.CurrentCultureIgnoreCase))
@@ -396,9 +408,9 @@ namespace MisterDoctor.Forms
                 var send = GoodBadCheck(parts, _twitchClient.TwitchUsername);
 
                 if (string.IsNullOrEmpty(send)) send = PhraseCheck(parts, message.Username);
-                if (string.IsNullOrEmpty(send)) send = RandomReplace(parts);
+                if (string.IsNullOrEmpty(send)) send = RandomReplace(message.Username, message.Channel, parts);
                 if (string.IsNullOrEmpty(send)) return;
-
+                
                 var sendParts = new MessageParts(send);
                 sendParts.UpdateWildcards(message);
 
@@ -430,7 +442,7 @@ namespace MisterDoctor.Forms
             return PhraseManager.CheckMessage(parts, username);
         }
 
-        private string RandomReplace(MessageParts parts)
+        private string RandomReplace(string user, string channel, MessageParts parts)
         {
             // Cooldown ?
             if (_coolDownTime.HasValue)
@@ -449,6 +461,10 @@ namespace MisterDoctor.Forms
             // If we passed the 'Random Check' then make sure it triggers next time
 
             _procNext = true;
+
+            // First check if the user is following (check after proc)
+
+            if (!IsFollowing(user, channel)) return string.Empty;
 
             // Get the indexes of the nouns
 
@@ -469,6 +485,61 @@ namespace MisterDoctor.Forms
             _coolDownTime = DateTime.Now.AddSeconds(_settings.CoolDown);
 
             return messageToSend;
+        }
+
+        private bool IsFollowing(string messageUsername, string channelName)
+        {
+            if (messageUsername.Equals(channelName, StringComparison.CurrentCultureIgnoreCase)) return true;
+
+            // get https://api.twitch.tv/kraken/users/<userId>/follows/channels/<channelId>
+            // Accept: application/vnd.twitchtv.v5+json
+            // Client-ID: xxxxxxxxxxxx
+
+            var client = new RestClient("https://api.twitch.tv/kraken/");
+            var id = DbHelper.TokenGet().ClientId;
+
+            // Get the channels id number (if hasn't been pulled yet)
+
+            if (string.IsNullOrEmpty(_channelId))
+            {
+                var channelRequest = new RestRequest($"users?login={channelName}");
+                channelRequest.AddHeader("Accept", "application/vnd.twitchtv.v5+json");
+                channelRequest.AddHeader("Client-ID", id);
+
+                var channelResponse = client.Get(channelRequest);
+
+                var crObj = JObject.Parse(channelResponse.Content);
+                if (!crObj.ContainsKey("_total")) return false;
+                if (crObj["_total"].ToObject<int>() != 1) return false;
+
+                _channelId = ((JArray)crObj.GetValue("users")).First()["_id"].ToString();
+            }
+
+            // Get the users id number
+
+            var userRequest = new RestRequest($"users?login={messageUsername}");
+            userRequest.AddHeader("Accept", "application/vnd.twitchtv.v5+json");
+            userRequest.AddHeader("Client-ID", id);
+
+            var userResponse = client.Get(userRequest);
+
+            var urObj = JObject.Parse(userResponse.Content);
+            if (!urObj.ContainsKey("_total")) return false;
+            if (urObj["_total"].ToObject<int>() != 1) return false;
+            var userId = ((JArray)urObj.GetValue("users")).First()["_id"].ToString();
+
+            // Get the follow information
+
+            var followRequest = new RestRequest($"users/{userId}/follows/channels/{_channelId}");
+            followRequest.AddHeader("Accept", "application/vnd.twitchtv.v5+json");
+            followRequest.AddHeader("Client-ID", id);
+
+            var followResponse = client.Get(followRequest);
+
+            var statusCode = followResponse.StatusCode;
+
+            return statusCode == HttpStatusCode.OK;
+
         }
     }
 }

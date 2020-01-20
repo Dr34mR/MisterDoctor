@@ -35,6 +35,9 @@
             this.btnSave = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.lnkGetOAuth = new System.Windows.Forms.LinkLabel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtClientId = new System.Windows.Forms.TextBox();
+            this.lnkGetClient = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // lblUsername
@@ -73,7 +76,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(12, 58);
+            this.btnSave.Location = new System.Drawing.Point(15, 112);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 4;
@@ -83,7 +86,7 @@
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.Location = new System.Drawing.Point(275, 58);
+            this.btnCancel.Location = new System.Drawing.Point(275, 112);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 6;
@@ -100,11 +103,42 @@
             this.lnkGetOAuth.TabStop = true;
             this.lnkGetOAuth.Text = "Get OAuth Key";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 89);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(101, 13);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "Twitch Bot Client ID";
+            // 
+            // txtClientId
+            // 
+            this.txtClientId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtClientId.Location = new System.Drawing.Point(130, 86);
+            this.txtClientId.Name = "txtClientId";
+            this.txtClientId.Size = new System.Drawing.Size(220, 20);
+            this.txtClientId.TabIndex = 8;
+            // 
+            // lnkGetClient
+            // 
+            this.lnkGetClient.AutoSize = true;
+            this.lnkGetClient.Location = new System.Drawing.Point(127, 117);
+            this.lnkGetClient.Name = "lnkGetClient";
+            this.lnkGetClient.Size = new System.Drawing.Size(67, 13);
+            this.lnkGetClient.TabIndex = 9;
+            this.lnkGetClient.TabStop = true;
+            this.lnkGetClient.Text = "Get Client ID";
+            // 
             // FormToken
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(362, 90);
+            this.ClientSize = new System.Drawing.Size(362, 149);
+            this.Controls.Add(this.lnkGetClient);
+            this.Controls.Add(this.txtClientId);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.lnkGetOAuth);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
@@ -133,5 +167,8 @@
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.LinkLabel lnkGetOAuth;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtClientId;
+        private System.Windows.Forms.LinkLabel lnkGetClient;
     }
 }
