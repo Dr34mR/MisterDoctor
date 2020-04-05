@@ -465,7 +465,7 @@ namespace MisterDoctor.Forms
             var sad = new[] {"no", "badbot", "why", "bad"};
 
             var wordsOnly = parts.Where(i => i.IsWord).Select(i => i.Value.ToLower()).ToList();
-            if (wordsOnly.Count != 2) return string.Empty;
+            if (wordsOnly.Count < 2) return string.Empty;
 
             // Bot Check
 
