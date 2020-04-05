@@ -33,6 +33,7 @@
             this.wordListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.phrasesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ignoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lblConnect = new System.Windows.Forms.Label();
             this.txtChannel = new System.Windows.Forms.TextBox();
@@ -46,7 +47,6 @@
             this.btnUpdate = new System.Windows.Forms.Button();
             this.lblProc = new System.Windows.Forms.Label();
             this.txtProc = new System.Windows.Forms.TextBox();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -69,7 +69,7 @@
             // tokenToolStripMenuItem
             // 
             this.tokenToolStripMenuItem.Name = "tokenToolStripMenuItem";
-            this.tokenToolStripMenuItem.Size = new System.Drawing.Size(51, 20);
+            this.tokenToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
             this.tokenToolStripMenuItem.Text = "Token";
             // 
             // wordListToolStripMenuItem
@@ -89,6 +89,12 @@
             this.ignoreToolStripMenuItem.Name = "ignoreToolStripMenuItem";
             this.ignoreToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
             this.ignoreToolStripMenuItem.Text = "Ignore";
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.settingsToolStripMenuItem.Text = "Settings";
             // 
             // aboutToolStripMenuItem
             // 
@@ -205,12 +211,6 @@
             this.txtProc.Name = "txtProc";
             this.txtProc.Size = new System.Drawing.Size(173, 20);
             this.txtProc.TabIndex = 3;
-            // 
-            // settingsToolStripMenuItem
-            // 
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.settingsToolStripMenuItem.Text = "Settings";
             // 
             // FormMain
             // 

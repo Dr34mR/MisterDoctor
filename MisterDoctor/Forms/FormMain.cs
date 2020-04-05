@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using RestSharp;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
+using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
 using Timer = System.Timers.Timer;
 
@@ -71,6 +72,9 @@ namespace MisterDoctor.Forms
             IgnoreManager.Initialize();
             PhraseManager.Initialize();
 
+            RussianManager.SendMessage += Russian_SendMessage;
+            RussianManager.SendTimeout += Russian_SendTimeout;
+
             if (UpdateHelper.UpdateAvailable()) Text += "  [UPDATE AVAILABLE]";
 
             UpdateFormStatus();
@@ -79,7 +83,7 @@ namespace MisterDoctor.Forms
             _timer.Elapsed += timer_Elapsed;
             _timer.Start();
         }
-        
+
         private void FormMain_Load(object sender, EventArgs e)
         {
             MinimumSize = Size;
@@ -330,17 +334,20 @@ namespace MisterDoctor.Forms
 
             var twitchCredentials = new ConnectionCredentials(token.Username, token.UserOAuthKey);
 
-            _twitchClient = new TwitchClient();
-            _twitchClient.OnMessageReceived += Twitch_OnMessageReceived;
-            try
+            lock (_threadLock)
             {
-                _twitchClient.Initialize(twitchCredentials, txtChannel.Text.Trim());
-                _twitchClient.Connect();
-            }
-            catch (Exception ex)
-            {
-                ShowError(ex.Message);
-                return;
+                _twitchClient = new TwitchClient();
+                _twitchClient.OnMessageReceived += Twitch_OnMessageReceived;
+                try
+                {
+                    _twitchClient.Initialize(twitchCredentials, txtChannel.Text.Trim());
+                    _twitchClient.Connect();
+                }
+                catch (Exception ex)
+                {
+                    ShowError(ex.Message);
+                    return;
+                }
             }
 
             SaveSettings();
@@ -351,13 +358,38 @@ namespace MisterDoctor.Forms
         {
             if (_twitchClient == null) return;
 
-            _twitchClient.LeaveChannel(txtChannel.Text);
-            _twitchClient?.Disconnect();
-            _twitchClient = null;
+            lock (_threadLock)
+            {
+                _twitchClient.LeaveChannel(txtChannel.Text);
+                _twitchClient?.Disconnect();
+                _twitchClient = null;
+            }
 
             UpdateFormStatus();
         }
-        
+
+        private void Russian_SendMessage(object sender, RussianMessageArgs e)
+        {
+            lock (_threadLock)
+            {
+                if (_twitchClient == null) return;
+                if (!_twitchClient.IsConnected) return;
+                
+                _twitchClient.SendMessage(txtChannel.Text, e.Message);
+            }
+        }
+
+        private void Russian_SendTimeout(object sender, RussianTimeoutArgs e)
+        {
+            lock (_threadLock)
+            {
+                if (_twitchClient == null) return;
+                if (!_twitchClient.IsConnected) return;
+
+                _twitchClient.TimeoutUser(txtChannel.Text, e.Username, e.Duration, e.Message);
+            }
+        }
+
         private void Twitch_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
             if (_closing) return;
@@ -365,14 +397,22 @@ namespace MisterDoctor.Forms
             if (message == null) return;
             if (message.IsMe) return;
             if (message.Username.Equals(_twitchClient.TwitchUsername, StringComparison.CurrentCultureIgnoreCase)) return;
-            
-            // Check for command
+
+            // Russian Roulette First
+
+            RussianManager.DigestMessage(message);
+
+            // Ignore List
 
             if (message.Message.StartsWith(_settings.CommandIgnore, StringComparison.CurrentCultureIgnoreCase))
             {
                 if (IgnoreManager.IgnoreUser(message.Username)) return;
                 IgnoreManager.AddIgnore(message.Username);
-                _twitchClient.SendMessage(message.Channel, $"Ok @{message.Username} :(");
+
+                lock (_threadLock)
+                {
+                    _twitchClient.SendMessage(message.Channel, $"Ok @{message.Username} :(");
+                }
                 return;
             }
 
@@ -380,15 +420,16 @@ namespace MisterDoctor.Forms
             {
                 if (!IgnoreManager.IgnoreUser(message.Username)) return;
                 IgnoreManager.RemoveIgnore(message.Username);
-                _twitchClient.SendMessage(message.Channel, $"{DbHelper.WordRandom()}! @{message.Username} PogChamp");
+                lock (_threadLock)
+                {
+                    _twitchClient.SendMessage(message.Channel, $"{DbHelper.WordRandom()}! @{message.Username} PogChamp");
+                }
                 return;
             }
 
-            // Then Check for IgnoreList
-
             if (IgnoreManager.IgnoreUser(message.Username)) return;
 
-            // Digest message
+            // Other Message Digests
 
             var userMessage = message.Message.Trim();
             if (string.IsNullOrEmpty(userMessage)) return;
@@ -404,7 +445,7 @@ namespace MisterDoctor.Forms
             lock (_threadLock)
             {
                 // First check for a word in the message
-
+                
                 var send = GoodBadCheck(parts, _twitchClient.TwitchUsername);
 
                 if (string.IsNullOrEmpty(send)) send = PhraseCheck(parts, message.Username);

@@ -135,6 +135,8 @@
     <Compile Include="Classes\MessageBoxEx.cs" />
     <Compile Include="Classes\MessagePart.cs" />
     <Compile Include="Classes\MessageParts.cs" />
+    <Compile Include="Classes\RussianMessageArgs.cs" />
+    <Compile Include="Classes\RussianTimeoutArgs.cs" />
     <Compile Include="Classes\Substitution.cs" />
     <Compile Include="Classes\TokenFile.cs" />
     <Compile Include="Classes\User.cs" />
@@ -198,6 +200,7 @@
     <Compile Include="Managers\IgnoreManager.cs" />
     <Compile Include="Managers\NounManager.cs" />
     <Compile Include="Managers\PhraseManager.cs" />
+    <Compile Include="Managers\RussianManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\FormAbout.resx">
