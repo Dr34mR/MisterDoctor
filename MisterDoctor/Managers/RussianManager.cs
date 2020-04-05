@@ -23,7 +23,7 @@ namespace MisterDoctor.Managers
         private static bool _cooldown;
         private static bool _enabled;
 
-        private const int CooldownMinutes = 1;
+        private const int CooldownMinutes = 20;
         private const int SignupSeconds = 60;
 
         private const int MsBetweenMsg = 1200;
@@ -89,7 +89,11 @@ namespace MisterDoctor.Managers
 
             TriggerMessage("Now time to choose ...");
             Thread.Sleep(2 * MsBetweenMsg);
-            TriggerMessage($"{userList.Count} entered for a timeout of {timeSpan.TotalMinutes} minutes");
+
+            var secs = timeSpan.TotalSeconds;
+            var mins = timeSpan.TotalMinutes;
+
+            TriggerMessage($"{userList.Count} entered for a timeout of {secs} seconds ({mins} minutes)");
             Thread.Sleep(2 * MsBetweenMsg);
             TriggerMessage("...");
             Thread.Sleep(2 *MsBetweenMsg);
@@ -124,6 +128,8 @@ namespace MisterDoctor.Managers
 
             _enabled = false;
             _cooldown = false;
+
+            TriggerMessage("Russian roulette cooldown is over");
         }
 
         private static void TriggerStartingMessages()
