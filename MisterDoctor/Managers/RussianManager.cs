@@ -17,14 +17,15 @@ namespace MisterDoctor.Managers
 
         // Logic Variables
 
-        private const string Trigger = "!russian";
+        private const string Trigger = "!sol";
         private readonly List<string> _usernames = new List<string>();
         
         private static bool _cooldown;
+        private static DateTime? _cooldownEnds;
         private static bool _enabled;
 
         private const int CooldownMinutes = 20;
-        private const int SignupSeconds = 60;
+        private const int SignupSeconds = 70;
 
         private const int MsBetweenMsg = 1200;
 
@@ -40,8 +41,30 @@ namespace MisterDoctor.Managers
 
         internal static void DigestMessage(ChatMessage message)
         {
-            if (_cooldown) return;
             if (!message.Message.Equals(Trigger, StringComparison.CurrentCultureIgnoreCase)) return;
+
+            if (_cooldown)
+            {
+                if (_cooldownEnds == null) return;
+
+                var timeSpan = _cooldownEnds.Value - DateTime.Now;
+                var roundedMinutes = Convert.ToInt32(timeSpan.TotalMinutes);
+                
+                string displayString;
+
+                if (roundedMinutes >= 1)
+                {
+                    displayString = $"{roundedMinutes} minutes";
+                }
+                else
+                {
+                    var roundedSeconds = Convert.ToInt32(timeSpan.TotalSeconds);
+                    displayString = $"{roundedSeconds} seconds";
+                }
+
+                TriggerMessage($"Shit out-of luck cooldown has {displayString} left");
+                return;
+            }
 
             // Check if the message comming in is a trigger
 
@@ -108,6 +131,10 @@ namespace MisterDoctor.Managers
             Thread.Sleep(2 * MsBetweenMsg);
             TriggerTimeout(user, timeSpan);
 
+            Instance._usernames.Clear();
+
+            _cooldownEnds = DateTime.Now.AddMinutes(CooldownMinutes);
+
             Instance._bgWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             Instance._bgWorker.DoWork += Worker_Cooldown;
             Instance._bgWorker.RunWorkerCompleted += Worker_CooldownCompleted;
@@ -127,14 +154,15 @@ namespace MisterDoctor.Managers
             Instance._bgWorker.Dispose();
 
             _enabled = false;
+            _cooldownEnds = null;
             _cooldown = false;
 
-            TriggerMessage("Russian roulette cooldown is over");
+            TriggerMessage($"Shit out-of luck cooldown is over - start another one with {Trigger} Jebaited");
         }
 
         private static void TriggerStartingMessages()
         {
-            TriggerMessage("RUSSIAN ROULETTE HAS STARTED! PogChamp Winner gets timed out Jebaited");
+            TriggerMessage("SHIT OUT-OF LUCK HAS STARTED! PogChamp Winner gets timed out Jebaited");
             Thread.Sleep(MsBetweenMsg);
             TriggerMessage($"Type {Trigger} to join - Careful though, the more that enter, the higher the timeout.");
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MisterDoctor.Classes;
 using MisterDoctor.Helpers;
@@ -64,15 +65,23 @@ namespace MisterDoctor.Managers
         {
             if (message == null) return string.Empty;
 
-            var cleanedWords = message.Where(i => i.IsWord).Select(word => word.Value.ToLower()).ToList();
+            var cleanedWords = message.Where(i => !string.IsNullOrEmpty(i.Value)).Select(word => word.Value.ToLower()).ToList();
 
+            var replies = new List<string>();
             foreach (var cleanWord in cleanedWords)
             {
                 if (!Manager._phraseList.TryGetValue(cleanWord, out var reply)) continue;
-                return reply;
+                replies.Add(reply);
             }
 
-            return string.Empty;
+            replies = replies.Distinct().ToList();
+
+            if (replies.Count < 1) return string.Empty;
+            if (replies.Count == 1) return replies.First();
+
+            var rand = new Random();
+            var randVal = rand.Next(replies.Count);
+            return replies[randVal];
         }
     }
 }

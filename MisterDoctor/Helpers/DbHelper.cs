@@ -14,6 +14,7 @@ namespace MisterDoctor.Helpers
         private const string CollectionWords = "words";
         private const string CollectionIgnore = "ignore";
         private const string CollectionSubstitution = "subs";
+        private const string CollectionCommands = "commands";
 
         public static Token TokenGet()
         {
@@ -251,6 +252,51 @@ namespace MisterDoctor.Helpers
 
                 var collection = db.GetCollection<Substitution>(CollectionSubstitution);
                 collection.Delete(substitution.Id);
+            }
+        }
+
+        public static Command[] CommandsGet()
+        {
+            using (var db = new LiteDatabase(DbName))
+            {
+                if (!db.CollectionExists(CollectionCommands)) return null;
+
+                var collection = db.GetCollection<Command>(CollectionCommands);
+                return collection.FindAll().OrderBy(i => i.Cmd).ToArray();
+            }
+        }
+
+        public static void CommandAdd(string cmd, string response)
+        {
+            var cleanCmd = cmd.Trim();
+            var cleanResponse = response.Trim();
+
+            if (string.IsNullOrEmpty(cleanCmd)) return;
+            if (string.IsNullOrEmpty(cleanResponse)) return;
+
+            var command = new Command
+            {
+                Cmd = cleanCmd.ToLower(),
+                Response = response
+            };
+
+            using (var db = new LiteDatabase(DbName))
+            {
+                var collection = db.GetCollection<Command>(CollectionCommands);
+                collection.Insert(command);
+            }
+        }
+
+        public static void CommandDelete(Command command)
+        {
+            if (command == null) return;
+
+            using (var db = new LiteDatabase(DbName))
+            {
+                if (!db.CollectionExists(CollectionCommands)) return;
+
+                var collection = db.GetCollection<Command>(CollectionCommands);
+                collection.Delete(command.Id);
             }
         }
     }

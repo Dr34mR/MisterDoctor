@@ -52,6 +52,7 @@ namespace MisterDoctor.Forms
             Text = "Mister Doctor";
 
             tokenToolStripMenuItem.Click += tokenMenu_Click;
+            commandsToolStripMenuItem.Click += commandMenu_Click;
             wordListToolStripMenuItem.Click += wordMenu_Click;
             phrasesToolStripMenuItem.Click += phraseMenu_Click;
             ignoreToolStripMenuItem.Click += ignoreMenu_Click;
@@ -68,9 +69,11 @@ namespace MisterDoctor.Forms
             txtProc.Text = _settings.ProcChance.ToString();
             txtCooldown.Text = _settings.CoolDown.ToString();
 
-            NounManager.Initialize();
+            CommandManager.Initialize();
+            
             IgnoreManager.Initialize();
             PhraseManager.Initialize();
+            NounManager.Initialize();
 
             RussianManager.SendMessage += Russian_SendMessage;
             RussianManager.SendTimeout += Russian_SendTimeout;
@@ -110,6 +113,13 @@ namespace MisterDoctor.Forms
         private void tokenMenu_Click(object sender, EventArgs e)
         {
             ShowToken();
+        }
+
+        private void commandMenu_Click(object sender, EventArgs e)
+        {
+            var commandForm = new FormCommands();
+            commandForm.ShowDialog(this);
+            commandForm.Dispose();
         }
 
         private void wordMenu_Click(object sender, EventArgs e)
@@ -402,7 +412,7 @@ namespace MisterDoctor.Forms
 
             RussianManager.DigestMessage(message);
 
-            // Ignore List
+            // Ignore List (Update / Remove only)
 
             if (message.Message.StartsWith(_settings.CommandIgnore, StringComparison.CurrentCultureIgnoreCase))
             {
@@ -427,32 +437,45 @@ namespace MisterDoctor.Forms
                 return;
             }
 
-            if (IgnoreManager.IgnoreUser(message.Username)) return;
-
-            // Other Message Digests
+            // Digest the message
 
             var userMessage = message.Message.Trim();
             if (string.IsNullOrEmpty(userMessage)) return;
 
             var parts = new MessageParts(userMessage);
-
             var wordCount = parts.WordCount();
-            if (wordCount <= 1) return;
-            if (wordCount > _settings.MaxMessageSize) return;
 
             // Now do the lock and checking
 
             lock (_threadLock)
             {
-                // First check for a word in the message
-                
-                var send = GoodBadCheck(parts, _twitchClient.TwitchUsername);
+                MessageParts sendParts;
 
-                if (string.IsNullOrEmpty(send)) send = PhraseCheck(parts, message.Username);
+                // First check the basics -> Commands -> Phrases -> GoodBot/BadBot
+                
+                var send = CommandManager.CheckMessage(parts, message.Username);
+                if (string.IsNullOrEmpty(send)) send = PhraseManager.CheckMessage(parts, message.Username);
+                if (string.IsNullOrEmpty(send)) send = GoodBadCheck(parts, _twitchClient.TwitchUsername);
+                if (!string.IsNullOrEmpty(send))
+                {
+                    sendParts = new MessageParts(send);
+                    sendParts.UpdateWildcards(message);
+                    _twitchClient.SendMessage(message.Channel, sendParts.ToString());
+                    return;
+                }
+
+                // Ignore list only applies to the random word replacement
+
+                if (IgnoreManager.IgnoreUser(message.Username)) return;
+                
+                // Now do 'buttsbot' style stuff
+
+                if (wordCount <= 1) return;
+                if (wordCount > _settings.MaxMessageSize) return;
                 if (string.IsNullOrEmpty(send)) send = RandomReplace(message.Username, message.Channel, parts);
                 if (string.IsNullOrEmpty(send)) return;
                 
-                var sendParts = new MessageParts(send);
+                sendParts = new MessageParts(send);
                 sendParts.UpdateWildcards(message);
 
                 _twitchClient.SendMessage(message.Channel, sendParts.ToString());
@@ -476,11 +499,6 @@ namespace MisterDoctor.Forms
             if (wordsOnly.Intersect(happy).Any()) return _settings.GoodBot;
 
             return wordsOnly.Intersect(sad).Any() ? _settings.BadBot : string.Empty;
-        }
-
-        private static string PhraseCheck(MessageParts parts, string username)
-        {
-            return PhraseManager.CheckMessage(parts, username);
         }
 
         private string RandomReplace(string user, string channel, MessageParts parts)
