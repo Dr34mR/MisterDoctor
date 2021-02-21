@@ -78,7 +78,7 @@ namespace Plugin.Markov
                 {
                     _messageQueue.Enqueue(wholeMessage);
 
-                    while (_messageQueue.Count > minimumCount * 5)
+                    while (_messageQueue.Count > 1000)
                     {
                         _messageQueue.Dequeue();
                     }
@@ -96,7 +96,7 @@ namespace Plugin.Markov
 
                 var queueItems = _messageQueue.ToArray();
 
-                var model = new StringMarkov();
+                var model = new StringMarkov(1);
                 model.Learn(queueItems);
 
                 var response = model.Walk().First();

@@ -4,9 +4,10 @@ namespace Plugin.Markov.TokenisationStrategies
 {
     public class StringMarkov : GenericMarkov<string, string>
     {
-        public StringMarkov(int level = 2)
-            : base(level)
-        { }
+        public StringMarkov(int level = 2) : base(level)
+        {
+
+        }
 
         public override IEnumerable<string> SplitTokens(string input)
         {

@@ -78,7 +78,7 @@ namespace Plugin.Markov
         public bool EnsureUniqueWalk { get; set; }
 
         // The number of previous states for the model to to consider when 
-        //suggesting the next state
+        // suggesting the next state
         public int Level { get; private set; }
         
         public void Learn(IEnumerable<TPhrase> phrases, bool ignoreAlreadyLearnt = true)
