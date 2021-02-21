@@ -4,18 +4,18 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-// ReSharper disable UnusedMember.Global
-// ReSharper disable FieldCanBeMadeReadOnly.Local
 // ReSharper disable InconsistentNaming
-// ReSharper disable SuggestVarOrType_SimpleTypes
-// ReSharper disable InvertIf
+// ReSharper disable EnumUnderlyingTypeIsInt
+// ReSharper disable UnusedMember.Global
+// ReSharper disable RedundantDelegateCreation
+// ReSharper disable PossibleNullReferenceException
 // ReSharper disable NotAccessedVariable
+// ReSharper disable RedundantAssignment
+// ReSharper disable SuggestVarOrType_SimpleTypes
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable UseObjectOrCollectionInitializer
-// ReSharper disable RedundantAssignment
 // ReSharper disable UnusedVariable
-// ReSharper disable EnumUnderlyingTypeIsInt
-// ReSharper disable RedundantDelegateCreation
+// ReSharper disable FieldCanBeMadeReadOnly.Local
 
 namespace MisterDoctor.Classes
 {

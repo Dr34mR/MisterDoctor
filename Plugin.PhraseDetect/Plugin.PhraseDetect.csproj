@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)MisterDoctor\bin\$(ConfigurationName)\net5.0-windows\Plugins\$(TargetFileName)&quot;" />
+  </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MisterDoctor.Plugins\MisterDoctor.Plugins.csproj" />
+  </ItemGroup>
+
+</Project>

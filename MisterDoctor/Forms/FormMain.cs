@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net;
-using System.Threading;
-using System.Timers;
 using System.Windows.Forms;
 using MisterDoctor.Classes;
+using MisterDoctor.Extensions;
 using MisterDoctor.Helpers;
 using MisterDoctor.Managers;
+using MisterDoctor.Plugins;
+using MisterDoctor.Plugins.Classes;
+using MisterDoctor.Plugins.Enums;
 using MisterDoctor.Properties;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -15,389 +19,378 @@ using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
-using Timer = System.Timers.Timer;
+using UserType = TwitchLib.Client.Enums.UserType;
 
 namespace MisterDoctor.Forms
 {
-    internal partial class FormMain : Form
+    public partial class FormMain : Form
     {
         private TwitchClient _twitchClient;
-        private readonly AppSettings _settings = DbHelper.AppSettingsGet();
-
-        private readonly Random _randGenerator = new Random(Thread.CurrentThread.ManagedThreadId);
-        private readonly object _threadLock = new object();
-        private DateTime? _coolDownTime;
-
-        private readonly Timer _timer = new Timer(1000);
-        private bool _procNext;
+        
+        private readonly object _threadlock = new();
+        
         private bool _closing;
-
         private string _channelId = string.Empty;
+
+        private const char CharPass = '\u25CF';
+
+        private readonly HashSet<string> _ignoredList = new();
 
         public FormMain()
         {
             InitializeComponent();
         }
 
-        internal void Setup()
+        public void Setup()
         {
+            MaximizeBox = false;
+
+            StartPosition = FormStartPosition.CenterScreen;
+
+            statusStrip1.SizingGrip = false;
+
             Icon = Resources.favicon;
+            Text = Application.ProductName;
 
-            stripConnected.Spring = true;
-            stripConnected.TextAlign = ContentAlignment.MiddleRight;
-            stripConnected.Font = new Font(stripConnected.Font, FontStyle.Bold);
+            var appSettings = DbHelper.ReadConnectionSettings();
 
-            statusStrip.SizingGrip = false;
+            txtChannel.Text = appSettings.ChannelName.Trim();
+            txtClient.Text = appSettings.BotClientId.Trim();
+            txtOAuth.Text = appSettings.BotOAuthKey.Trim();
+            txtUsername.Text = appSettings.BotUsername.Trim();
 
-            Text = "Mister Doctor";
+            txtOAuth.PasswordChar = CharPass;
+            txtClient.PasswordChar = CharPass;
 
-            tokenToolStripMenuItem.Click += tokenMenu_Click;
-            commandsToolStripMenuItem.Click += commandMenu_Click;
-            wordListToolStripMenuItem.Click += wordMenu_Click;
-            phrasesToolStripMenuItem.Click += phraseMenu_Click;
-            ignoreToolStripMenuItem.Click += ignoreMenu_Click;
-            settingsToolStripMenuItem.Click += settingsMenu_Click;
-            aboutToolStripMenuItem.Click += aboutMenu_Click;
-            
-            btnUpdate.Click += btnUpdate_Click;
+            statusStripConnected.TextAlign = ContentAlignment.MiddleRight;
+            statusStripConnected.Font = new Font(statusStripConnected.Font, FontStyle.Bold);
 
-            txtChannel.TextChanged += txtChannel_TextChanged;
             btnConnect.Click += btnConnect_Click;
 
-            txtChannel.Text = _settings.ChannelName;
-            chkConnect.Checked = _settings.AutoConnect;
-            txtProc.Text = _settings.ProcChance.ToString();
-            txtCooldown.Text = _settings.CoolDown.ToString();
+            linkOAuth.LinkClicked += linkOAuth_LinkClicked;
+            linkClientId.LinkClicked += linkClientId_LinkClicked;
 
-            CommandManager.Initialize();
-            
-            IgnoreManager.Initialize();
-            PhraseManager.Initialize();
+            chkAutoConnect.Checked = appSettings.AutoConnect;
+
+            FormClosing += Form_FormClosing;
+
+            menuPlugins.Click += menuPlugins_Click;
+            menuIgnored.Click += menuIgnored_Click;
+            menuAbout.Click += menuAbout_Click;
+
             NounManager.Initialize();
 
-            RussianManager.SendMessage += Russian_SendMessage;
-            RussianManager.SendTimeout += Russian_SendTimeout;
+            PluginManager.Initialize();
 
-            if (UpdateHelper.UpdateAvailable()) Text += "  [UPDATE AVAILABLE]";
+            PluginManager.SendMessageHandler += Plugin_SendTwitchMessage;
+            PluginManager.TimeoutHandler += Plugin_TimeoutUser;
+
+            LoadIgnoredList();
 
             UpdateFormStatus();
-
-            _timer.AutoReset = true;
-            _timer.Elapsed += timer_Elapsed;
-            _timer.Start();
         }
 
-        private void FormMain_Load(object sender, EventArgs e)
+        private void menuIgnored_Click(object sender, EventArgs e)
         {
-            MinimumSize = Size;
-            MaximumSize = Size;
+            var ignoredSetting = new Setting
+            {
+                Description = "List of usernames for ignored users",
+                Name = "Ignored Users",
+                Type = SettingType.StringList
+            };
 
-            if (chkConnect.Checked) btnConnect.PerformClick();
+            var currentIgnored = DbHelper.GetIgnoredUsers();
+
+            ignoredSetting.ValueStringList = currentIgnored.Select(i => i.Username).ToList();
+
+            using var ignoredForm = new FormSettingStringList(ignoredSetting)
+            {
+                StartPosition = FormStartPosition.CenterParent, 
+                Text = @"Ignored Users",
+                FormBorderStyle = FormBorderStyle.FixedToolWindow,
+                Size = new Size(315,165)
+            };
+
+            ignoredForm.MaximumSize = ignoredForm.Size;
+            ignoredForm.MinimumSize = ignoredForm.Size;
+
+            ignoredForm.ShowDialog(this);
+
+            var returnList = ignoredForm.ReturnValue;
+
+            returnList = returnList
+                .Select(i => i.ToLower().Trim())
+                .Where(i => !string.IsNullOrEmpty(i))
+                .Distinct()
+                .ToList();
+
+            var newIgnored = new List<IgnoredUser>();
+
+            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+            foreach(var returnItem in returnList)
+            {
+                newIgnored.Add(new IgnoredUser
+                {
+                    Username = returnItem
+                });
+            }
+
+            DbHelper.SaveIgnoredUsers(newIgnored);
         }
 
-        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        private void menuAbout_Click(object sender, EventArgs e)
         {
-            _closing = true;
             Enabled = false;
 
-            _timer.Stop();
-            _timer.Dispose();
+            var aboutForm = new FormAbout();
+            aboutForm.Setup();
+            aboutForm.ShowDialog(this);
+            aboutForm.Dispose();
 
-            if (int.TryParse(txtProc.Text, out var intProc)) _settings.ProcChance = intProc;
-            if (int.TryParse(txtCooldown.Text, out var intCoolDown)) _settings.CoolDown = intCoolDown;
-
-            SaveSettings();
-            Disconnect();
+            Enabled = true;
         }
 
-        private void tokenMenu_Click(object sender, EventArgs e)
+        private void menuPlugins_Click(object sender, EventArgs e)
         {
-            ShowToken();
+            Enabled = false;
+
+            var pluginForm = new FormPlugins();
+            pluginForm.Setup();
+            pluginForm.ShowDialog(this);
+            pluginForm.Dispose();
+
+            Enabled = true;
         }
 
-        private void commandMenu_Click(object sender, EventArgs e)
+        private void Plugin_SendTwitchMessage(object sender, SendMessageArgs e)
         {
-            var commandForm = new FormCommands();
-            commandForm.ShowDialog(this);
-            commandForm.Dispose();
+            SendMessage(e?.Reply, e?.OriginalMessage);
         }
-
-        private void wordMenu_Click(object sender, EventArgs e)
+        
+        private void SendMessage(string reply, DigestMessage originalMessage)
         {
-            ShowWords();
-        }
+            if (_closing) return;
+            if (string.IsNullOrEmpty(reply)) return;
+            if (_twitchClient == null) return;
+            if (!_twitchClient.IsConnected) return;
 
-        private void phraseMenu_Click(object sender, EventArgs e)
-        {
-            var phrasesForm = new FormPhrases();
-            phrasesForm.ShowDialog(this);
-            phrasesForm.Dispose();
-        }
+            // Check for Word Substitution
 
-        private void ignoreMenu_Click(object sender, EventArgs e)
-        {
-            var ignoreForm = new FormIgnore();
-            ignoreForm.ShowDialog(this);
-            ignoreForm.Dispose();
-        }
-
-        private void aboutMenu_Click(object sender, EventArgs e)
-        {
-            using (var aboutForm = new FormAbout())
+            if (originalMessage != null)
             {
-                aboutForm.ShowDialog(this);
+                var replyParts = new MessageParts(reply);
+                replyParts.UpdateWildcards(originalMessage);
+                reply = replyParts.ToString();
+            }
+
+            lock (_threadlock)
+            {
+                _twitchClient.SendMessage(txtChannel.Text.Trim(), reply);
             }
         }
 
-        private void settingsMenu_Click(object sender, EventArgs e)
+        private void Plugin_TimeoutUser(object sender, TimeoutArgs e)
         {
-            using (var settingsForm = new FormSettings())
-            {
-                settingsForm.Settings = _settings;
-                settingsForm.ShowDialog(this);
-                if (!settingsForm.Cancelled) DbHelper.AppSettingsSet(_settings);
-            }
-        }
+            if (_closing) return;
+            if (e == null) return;
+            if (string.IsNullOrEmpty(e.Username)) return;
+            if (_twitchClient == null) return;
+            if (!_twitchClient.IsConnected) return;
 
-        private void ShowToken()
-        {
-            FormToken tokenForm = null;
-            try
-            {
-                tokenForm = new FormToken
-                {
-                    Token = DbHelper.TokenGet()
-                };
-
-                tokenForm.ShowDialog(this);
-
-                if (tokenForm.Save) DbHelper.TokenSet(tokenForm.Token);
-            }
-            finally
-            {
-                tokenForm?.Dispose();
-            }
-        }
-
-        private void ShowWords()
-        {
-            var wordForm = new FormWords();
-            wordForm.ShowDialog(this);
-            wordForm.Dispose();
-        }
-
-        private void txtChannel_TextChanged(object sender, EventArgs e)
-        {
-            UpdateFormStatus();
+            _twitchClient.TimeoutUser(txtChannel.Text, e.Username, e.Duration, e.Message);
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            txtChannel.Text = txtChannel.Text.Trim();
+            Enabled = false;
             if (_twitchClient != null) Disconnect();
             else Connect();
+            Enabled = true;
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
+        private static void linkOAuth_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (!int.TryParse(txtProc.Text, out var intProc))
+            var processInfo = new ProcessStartInfo("https://twitchapps.com/tmi/")
             {
-                ShowError("Proc Chance must be a number");
-                return;
-            }
-
-            if (!int.TryParse(txtCooldown.Text, out var intCoolDown))
-            {
-                ShowError("Cooldown must be a number");
-                return;
-            }
-
-            _settings.CoolDown = intCoolDown;
-            _settings.ProcChance = intProc;
-
-            SaveSettings();
-
-            MessageBoxEx.Show(this, "Settings Updated", Application.ProductName, MessageBoxButtons.OK);
+                UseShellExecute = true,
+                Verb = "open"
+            };
+            Process.Start(processInfo);
         }
 
-        private void SaveSettings()
+        private static void linkClientId_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            _settings.ChannelName = txtChannel.Text.Trim();
-            _settings.AutoConnect = chkConnect.Checked;
-            DbHelper.AppSettingsSet(_settings);
+            var processInfo = new ProcessStartInfo("https://dev.twitch.tv/console/apps/")
+            {
+                UseShellExecute = true,
+                Verb = "open"
+            };
+            Process.Start(processInfo);
+        }
+
+        private void Form_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _closing = true;
+            Enabled = false;
+
+            Disconnect();
+
+            var appSettings = new ConnectionSettings
+            {
+                AutoConnect = chkAutoConnect.Checked,
+                BotClientId = txtClient.Text.Trim(),
+                BotOAuthKey = txtOAuth.Text.Trim(),
+                BotUsername = txtUsername.Text.Trim(),
+                ChannelName = txtChannel.Text.Trim()
+            };
+
+            DbHelper.SaveConnectionSettings(appSettings);
+        }
+
+        private void Main_Load(object sender, EventArgs e)
+        {
+            MinimumSize = Size;
+            MaximumSize = Size;
+
+            if (chkAutoConnect.Checked)
+            {
+                btnConnect.PerformClick();
+            }
+
+            linkClientId.Select();
+        }
+
+        private void LoadIgnoredList()
+        {
+            var ignoreList = DbHelper.GetIgnoredUsers();
+
+            var lowerList = ignoreList
+                .Select(i => i.Username.ToLower().Trim())
+                .Where(i => !string.IsNullOrEmpty(i))
+                .Distinct();
+
+            foreach(var lowerItem in lowerList)
+            {
+                _ignoredList.Add(lowerItem);
+            }
         }
 
         private void UpdateFormStatus()
         {
             if (_twitchClient == null)
             {
-                stripConnected.Text = "Disconnected";
-                stripConnected.ForeColor = Color.DarkRed;
+                statusStripConnected.Text = @"Disconnected";
+                statusStripConnected.ForeColor = Color.DarkRed;
 
-                btnConnect.Text = "Connect";
-                txtChannel.Enabled = Enabled;
-                btnConnect.Enabled = !string.IsNullOrEmpty(txtChannel.Text.Trim());
+                btnConnect.Text = @"Connect";
+                txtChannel.Enabled = true;
+                txtClient.Enabled = true;
+                txtOAuth.Enabled = true;
+                txtUsername.Enabled = true;
             }
             else
             {
-                stripConnected.Text = $"Connected as [{_twitchClient.TwitchUsername}]";
-                stripConnected.ForeColor = Color.DarkGreen;
+                statusStripConnected.Text = $@"Connected as [{_twitchClient.TwitchUsername}]";
+                statusStripConnected.ForeColor = Color.DarkGreen;
 
-                btnConnect.Text = "Disconnect";
+                btnConnect.Text = @"Disconnect";
                 txtChannel.Enabled = false;
+                txtClient.Enabled = false;
+                txtOAuth.Enabled = false;
+                txtUsername.Enabled = false;
             }
-
-            btnUpdate.Enabled = !txtChannel.Enabled;
         }
-
-        private void ShowError(string message)
-        {
-            MessageBoxEx.Show(this, message.Trim(), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        private void timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            var textToSet = "No Cooldown";
-            lock (_threadLock)
-            {
-                if (_procNext)
-                {
-                    textToSet = "Triggered - Waiting for next match";
-                }
-                else if (_coolDownTime != null)
-                {
-                    if (DateTime.Now > _coolDownTime) _coolDownTime = null;
-                    else
-                    {
-                        var diff = _coolDownTime.Value - DateTime.Now;
-                        textToSet = $"Cooldown {Math.Floor(diff.TotalSeconds)} second/s";
-                    }
-                }
-            }
-            stripCooldown.Text = textToSet;
-        }
-
-        // Twitch Things
 
         private void Connect()
         {
-            if (_twitchClient != null) return;
-
-            var token = DbHelper.TokenGet();
-
-            if (token == null)
+            var channel = txtChannel.Text.Trim();
+            if (string.IsNullOrEmpty(channel))
             {
-                ShowError("No Token Set");
-                ShowToken();
+                ShowError("Connect to Channel can not be blank");
                 return;
             }
 
-            if (string.IsNullOrEmpty(token.Username))
+            var userName = txtUsername.Text.Trim();
+            if (string.IsNullOrEmpty(userName))
             {
-                ShowError("No Token Username Set");
-                ShowToken();
+                ShowError("No Username Set");
                 return;
             }
 
-            if (string.IsNullOrEmpty(token.UserOAuthKey))
+            var oAuth = txtOAuth.Text.Trim();
+            if (string.IsNullOrEmpty(oAuth))
             {
-                ShowError("No Token OAuth Key Set");
-                ShowToken();
+                ShowError("No OAuth Set");
                 return;
             }
 
-            if (!token.UserOAuthKey.StartsWith("oauth:", StringComparison.CurrentCultureIgnoreCase))
+            if (!oAuth.StartsWith("oauth:", StringComparison.CurrentCultureIgnoreCase))
             {
                 ShowError("OAuth Key must start with 'oauth:'");
-                ShowToken();
                 return;
             }
 
-            if (string.IsNullOrEmpty(token.ClientId))
+            var clientId = txtClient.Text.Trim();
+            if (string.IsNullOrEmpty(clientId))
             {
                 ShowError("No Client ID");
-                ShowToken();
                 return;
             }
 
-            if (DbHelper.WordRandom() == null)
+            if (PluginManager.LoadedPlugins.Count < 1)
             {
-                ShowError("No Substitution Words Set");
-                ShowWords();
+                ShowError("No plugins loaded");
                 return;
             }
 
-            if (!int.TryParse(txtProc.Text, out var intProc))
+            Enabled = false;
+
+            var twitchCredentials = new ConnectionCredentials(userName, oAuth);
+
+            lock (_threadlock)
             {
-                ShowError("Proc Chance must be a number");
-                return;
-            }
-
-            if (!int.TryParse(txtCooldown.Text, out var intCoolDown))
-            {
-                ShowError("Cooldown must be a number");
-                return;
-            }
-
-            _settings.CoolDown = intCoolDown;
-            _settings.ProcChance = intProc;
-
-            var twitchCredentials = new ConnectionCredentials(token.Username, token.UserOAuthKey);
-
-            lock (_threadLock)
-            {
-                _twitchClient = new TwitchClient();
-                _twitchClient.OnMessageReceived += Twitch_OnMessageReceived;
+                if (_twitchClient == null)
+                {
+                    _twitchClient = new TwitchClient();
+                    _twitchClient.OnMessageReceived += Twitch_OnMessageReceived;
+                }
+                
                 try
                 {
-                    _twitchClient.Initialize(twitchCredentials, txtChannel.Text.Trim());
+                    _twitchClient.Initialize(twitchCredentials, channel);
                     _twitchClient.Connect();
                 }
                 catch (Exception ex)
                 {
-                    ShowError(ex.Message);
-                    return;
+                    ShowError(ex);
                 }
             }
 
-            SaveSettings();
             UpdateFormStatus();
+
+            while (!_twitchClient.JoinedChannels.Any())
+            {
+                System.Threading.Thread.Sleep(200);
+            }
+
+            _twitchClient.SendMessage(channel, "Connected");
+
+            Enabled = true;
         }
 
         private void Disconnect()
         {
             if (_twitchClient == null) return;
 
-            lock (_threadLock)
+            lock (_threadlock)
             {
-                _twitchClient.LeaveChannel(txtChannel.Text);
-                _twitchClient?.Disconnect();
+                _twitchClient.LeaveChannel(txtChannel.Text.Trim());
+                _twitchClient.Disconnect();
                 _twitchClient = null;
+                _channelId = string.Empty;
             }
 
             UpdateFormStatus();
-        }
-
-        private void Russian_SendMessage(object sender, RussianMessageArgs e)
-        {
-            lock (_threadLock)
-            {
-                if (_twitchClient == null) return;
-                if (!_twitchClient.IsConnected) return;
-                
-                _twitchClient.SendMessage(txtChannel.Text, e.Message);
-            }
-        }
-
-        private void Russian_SendTimeout(object sender, RussianTimeoutArgs e)
-        {
-            lock (_threadLock)
-            {
-                if (_twitchClient == null) return;
-                if (!_twitchClient.IsConnected) return;
-
-                _twitchClient.TimeoutUser(txtChannel.Text, e.Username, e.Duration, e.Message);
-            }
         }
 
         private void Twitch_OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -408,142 +401,110 @@ namespace MisterDoctor.Forms
             if (message.IsMe) return;
             if (message.Username.Equals(_twitchClient.TwitchUsername, StringComparison.CurrentCultureIgnoreCase)) return;
 
-            // Russian Roulette First
+            // Now we have the message :)
 
-            RussianManager.DigestMessage(message);
-
-            // Ignore List (Update / Remove only)
-
-            if (message.Message.StartsWith(_settings.CommandIgnore, StringComparison.CurrentCultureIgnoreCase))
+            var digestMessage = new DigestMessage
             {
-                if (IgnoreManager.IgnoreUser(message.Username)) return;
-                IgnoreManager.AddIgnore(message.Username);
+                Message = new MessageParts(message.Message),
+                FromAccount = message.DisplayName,
+                IsFollower = IsFollowing(message.Username, message.Channel),
+                IsSub = message.IsSubscriber,
+                UserType = GetUserType(message),
+                BotUsername = _twitchClient.TwitchUsername,
+                ChannelName = message.Channel,
+                IsIgnored = _ignoredList.Contains(message.DisplayName.ToLower())
+            };
 
-                lock (_threadLock)
-                {
-                    _twitchClient.SendMessage(message.Channel, $"Ok @{message.Username} :(");
-                }
-                return;
-            }
+            // So first check to see if the user should be added / removed from the ignored list
 
-            if (message.Message.StartsWith(_settings.CommandUnignore, StringComparison.CurrentCultureIgnoreCase))
+            if (message.Message.StartsWith(Constants.IgnoreCommand, StringComparison.CurrentCultureIgnoreCase))
             {
-                if (!IgnoreManager.IgnoreUser(message.Username)) return;
-                IgnoreManager.RemoveIgnore(message.Username);
-                lock (_threadLock)
+                var lowerName = message.DisplayName.ToLower();
+
+                if (_ignoredList.Contains(lowerName)) return;
+
+                _ignoredList.Add(lowerName);
+                    
+                var currentList = DbHelper.GetIgnoredUsers();
+
+                if (currentList.Any(i => i.Username.Equals(lowerName, StringComparison.CurrentCultureIgnoreCase)))
                 {
-                    _twitchClient.SendMessage(message.Channel, $"{DbHelper.WordRandom()}! @{message.Username} PogChamp");
-                }
-                return;
-            }
-
-            // Digest the message
-
-            var userMessage = message.Message.Trim();
-            if (string.IsNullOrEmpty(userMessage)) return;
-
-            var parts = new MessageParts(userMessage);
-            var wordCount = parts.WordCount();
-
-            // Now do the lock and checking
-
-            lock (_threadLock)
-            {
-                MessageParts sendParts;
-
-                // First check the basics -> Commands -> Phrases -> GoodBot/BadBot
-                
-                var send = CommandManager.CheckMessage(parts, message.Username);
-                if (string.IsNullOrEmpty(send)) send = PhraseManager.CheckMessage(parts, message.Username);
-                if (string.IsNullOrEmpty(send)) send = GoodBadCheck(parts, _twitchClient.TwitchUsername);
-                if (!string.IsNullOrEmpty(send))
-                {
-                    sendParts = new MessageParts(send);
-                    sendParts.UpdateWildcards(message);
-                    _twitchClient.SendMessage(message.Channel, sendParts.ToString());
                     return;
                 }
 
-                // Ignore list only applies to the random word replacement
+                currentList.Add(new IgnoredUser
+                {
+                    Username = lowerName
+                });
 
-                if (IgnoreManager.IgnoreUser(message.Username)) return;
-                
-                // Now do 'buttsbot' style stuff
+                DbHelper.SaveIgnoredUsers(currentList);
 
-                if (wordCount <= 1) return;
-                if (wordCount > _settings.MaxMessageSize) return;
-                if (string.IsNullOrEmpty(send)) send = RandomReplace(message.Username, message.Channel, parts);
-                if (string.IsNullOrEmpty(send)) return;
-                
-                sendParts = new MessageParts(send);
-                sendParts.UpdateWildcards(message);
+                SendMessage(Constants.IgnoreResponse, digestMessage);
 
-                _twitchClient.SendMessage(message.Channel, sendParts.ToString());
+                return;
             }
+
+            if (message.Message.StartsWith(Constants.UnignoreCommand, StringComparison.CurrentCultureIgnoreCase))
+            {
+                var lowerName = message.DisplayName.ToLower();
+
+                if (!_ignoredList.Contains(lowerName)) return;
+
+                _ignoredList.Remove(lowerName);
+
+                var currentList = DbHelper.GetIgnoredUsers();
+
+                var matchingUser = currentList.FirstOrDefault(i => i.Username.Equals(lowerName, StringComparison.CurrentCultureIgnoreCase));
+
+                if (matchingUser == null)
+                {
+                    return;
+                }
+
+                currentList.Remove(matchingUser);
+
+                DbHelper.SaveIgnoredUsers(currentList);
+
+                SendMessage(Constants.UnignoreResponse, digestMessage);
+                return;
+            }
+
+            // If not then we process them as per normal
+
+            foreach (var part in digestMessage.Message.Where(i => i.IsWord))
+            {
+                part.IsNoun = NounManager.IsNoun(part.Value);
+            }
+
+            PluginManager.MessageToPlugins(digestMessage);
         }
 
-        private string GoodBadCheck(MessageParts parts, string botName)
+        private static Plugins.Enums.UserType GetUserType(ChatMessage message)
         {
-            var happy = new[] {"yes", "goodbot", "plz", "nice"};
-            var sad = new[] {"no", "badbot", "why", "bad"};
-
-            var wordsOnly = parts.Where(i => i.IsWord).Select(i => i.Value.ToLower()).ToList();
-            if (wordsOnly.Count < 2) return string.Empty;
-
-            // Bot Check
-
-            if (!wordsOnly.Any(i => i.Equals(botName.ToLower()))) return string.Empty;
-
-            // Now check for happy or sad
-
-            if (wordsOnly.Intersect(happy).Any()) return _settings.GoodBot;
-
-            return wordsOnly.Intersect(sad).Any() ? _settings.BadBot : string.Empty;
-        }
-
-        private string RandomReplace(string user, string channel, MessageParts parts)
-        {
-            // Cooldown ?
-            if (_coolDownTime.HasValue)
+            switch (message.UserType)
             {
-                if (_coolDownTime > DateTime.Now) return string.Empty;
-                _coolDownTime = null;
+                case UserType.Viewer when message.IsVip:
+                {
+                    return Plugins.Enums.UserType.Vip;
+                }
+                case UserType.Admin:
+                case UserType.Staff:
+                case UserType.Moderator:
+                case UserType.GlobalModerator:
+                {
+                    return Plugins.Enums.UserType.Mod;
+                }
+                case UserType.Broadcaster:
+                {
+                    return Plugins.Enums.UserType.Streamer;
+                }
+                // ReSharper disable once RedundantCaseLabel
+                case UserType.Viewer:
+                default:
+                {
+                    return Plugins.Enums.UserType.Regular;
+                }
             }
-
-            if (!_procNext)
-            {
-                // Min is Inclisive / Max is Exclusive
-                var newValue = _randGenerator.Next(1, 101); // 1 to 100
-                if (newValue > _settings.ProcChance) return string.Empty;
-            }
-
-            // If we passed the 'Random Check' then make sure it triggers next time
-
-            _procNext = true;
-
-            // First check if the user is following (check after proc)
-
-            if (!IsFollowing(user, channel)) return string.Empty;
-
-            // Get the indexes of the nouns
-
-            if (!parts.HasNoun()) return string.Empty;
-            var nounIndexes = parts.NounIndexes();
-
-            // Randomly pick a noun index
-
-            var originalMessage = parts.ToString();
-
-            var replaceIndex = _randGenerator.Next(nounIndexes.Count);
-            parts.ReplaceWord(nounIndexes[replaceIndex], DbHelper.WordRandom().Value);
-
-            var messageToSend = parts.ToString();
-            if (originalMessage.Equals(messageToSend, StringComparison.CurrentCultureIgnoreCase)) return string.Empty;
-            
-            _procNext = false;
-            _coolDownTime = DateTime.Now.AddSeconds(_settings.CoolDown);
-
-            return messageToSend;
         }
 
         private bool IsFollowing(string messageUsername, string channelName)
@@ -555,7 +516,7 @@ namespace MisterDoctor.Forms
             // Client-ID: xxxxxxxxxxxx
 
             var client = new RestClient("https://api.twitch.tv/kraken/");
-            var id = DbHelper.TokenGet().ClientId;
+            var id = txtClient.Text.Trim();
 
             // Get the channels id number (if hasn't been pulled yet)
 
@@ -569,9 +530,14 @@ namespace MisterDoctor.Forms
 
                 var crObj = JObject.Parse(channelResponse.Content);
                 if (!crObj.ContainsKey("_total")) return false;
-                if (crObj["_total"].ToObject<int>() != 1) return false;
+                if (crObj["_total"]?.ToObject<int>() != 1) return false;
 
-                _channelId = ((JArray)crObj.GetValue("users")).First()["_id"].ToString();
+                _channelId = ((JArray) crObj.GetValue("users"))?.First()["_id"]?.ToString() ?? string.Empty;
+            }
+
+            if (string.IsNullOrEmpty(_channelId))
+            {
+                return false;
             }
 
             // Get the users id number
@@ -584,8 +550,13 @@ namespace MisterDoctor.Forms
 
             var urObj = JObject.Parse(userResponse.Content);
             if (!urObj.ContainsKey("_total")) return false;
-            if (urObj["_total"].ToObject<int>() != 1) return false;
-            var userId = ((JArray)urObj.GetValue("users")).First()["_id"].ToString();
+            if (urObj["_total"]?.ToObject<int>() != 1) return false;
+            var userId = ((JArray)urObj.GetValue("users"))?.First()["_id"]?.ToString() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return false;
+            }
 
             // Get the follow information
 
@@ -598,7 +569,16 @@ namespace MisterDoctor.Forms
             var statusCode = followResponse.StatusCode;
 
             return statusCode == HttpStatusCode.OK;
+        }
 
+        private void ShowError(Exception ex)
+        {
+            ShowError(ex.Message);
+        }
+
+        private void ShowError(string message)
+        {
+            MessageBoxEx.Show(this, message.Trim(), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

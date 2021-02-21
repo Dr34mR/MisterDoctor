@@ -1,4 +1,5 @@
-﻿namespace MisterDoctor.Forms
+﻿
+namespace MisterDoctor.Forms
 {
     partial class FormAbout
     {
@@ -28,80 +29,75 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblIconAbout = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.lblAbout = new System.Windows.Forms.Label();
-            this.linkGithub = new System.Windows.Forms.LinkLabel();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormAbout));
             this.btnClose = new System.Windows.Forms.Button();
+            this.linkGithub = new System.Windows.Forms.LinkLabel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
-            // lblIconAbout
+            // btnClose
             // 
-            this.lblIconAbout.AutoSize = true;
-            this.lblIconAbout.Location = new System.Drawing.Point(111, 34);
-            this.lblIconAbout.Name = "lblIconAbout";
-            this.lblIconAbout.Size = new System.Drawing.Size(189, 13);
-            this.lblIconAbout.TabIndex = 0;
-            this.lblIconAbout.Text = "Icon designed by Freepik from Flaticon";
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BackgroundImage = global::MisterDoctor.Properties.Resources.prawn;
-            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 9);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(90, 73);
-            this.pictureBox1.TabIndex = 1;
-            this.pictureBox1.TabStop = false;
-            // 
-            // lblAbout
-            // 
-            this.lblAbout.AutoSize = true;
-            this.lblAbout.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAbout.Location = new System.Drawing.Point(108, 9);
-            this.lblAbout.Name = "lblAbout";
-            this.lblAbout.Size = new System.Drawing.Size(153, 25);
-            this.lblAbout.TabIndex = 2;
-            this.lblAbout.Text = "Mister Doctor";
+            this.btnClose.Location = new System.Drawing.Point(287, 64);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(75, 23);
+            this.btnClose.TabIndex = 0;
+            this.btnClose.Text = "Close";
+            this.btnClose.UseVisualStyleBackColor = true;
             // 
             // linkGithub
             // 
             this.linkGithub.AutoSize = true;
-            this.linkGithub.Location = new System.Drawing.Point(115, 69);
+            this.linkGithub.Location = new System.Drawing.Point(111, 69);
             this.linkGithub.Name = "linkGithub";
-            this.linkGithub.Size = new System.Drawing.Size(68, 13);
-            this.linkGithub.TabIndex = 3;
+            this.linkGithub.Size = new System.Drawing.Size(74, 15);
+            this.linkGithub.TabIndex = 1;
             this.linkGithub.TabStop = true;
             this.linkGithub.Text = "GitHub Page";
             // 
-            // btnClose
+            // label1
             // 
-            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClose.Location = new System.Drawing.Point(287, 64);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(75, 23);
-            this.btnClose.TabIndex = 8;
-            this.btnClose.Text = "Close";
-            this.btnClose.UseVisualStyleBackColor = true;
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label1.Location = new System.Drawing.Point(108, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(153, 25);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Mister Doctor";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(111, 34);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(212, 15);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Icon designed by Freepik from Flaticon";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.BackgroundImage")));
+            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pictureBox1.Location = new System.Drawing.Point(12, 9);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(90, 73);
+            this.pictureBox1.TabIndex = 4;
+            this.pictureBox1.TabStop = false;
             // 
             // FormAbout
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(371, 99);
-            this.Controls.Add(this.btnClose);
-            this.Controls.Add(this.linkGithub);
-            this.Controls.Add(this.lblAbout);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.lblIconAbout);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.linkGithub);
+            this.Controls.Add(this.btnClose);
             this.Name = "FormAbout";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "FormAbout";
-            this.Load += new System.EventHandler(this.FormAbout_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -110,10 +106,10 @@
 
         #endregion
 
-        private System.Windows.Forms.Label lblIconAbout;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label lblAbout;
-        private System.Windows.Forms.LinkLabel linkGithub;
         private System.Windows.Forms.Button btnClose;
+        private System.Windows.Forms.LinkLabel linkGithub;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

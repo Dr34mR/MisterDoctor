@@ -5,24 +5,23 @@ namespace MisterDoctor.Forms
 {
     public partial class FormInput : Form
     {
-        public string Value { get; set; }
+        public string Value { get; private set; }
 
         public FormInput()
         {
             InitializeComponent();
-        }
 
-        private void FormAddWord_Load(object sender, EventArgs e)
-        {
-            txtWord.KeyDown += txtWord_KeyDown;
+            StartPosition = FormStartPosition.CenterParent;
+
+            txtInput.KeyDown += txtInput_KeyDown;
 
             btnAdd.Click += btnAdd_Click;
-            btnCancel.Click += btnCancel_Click;
+            btnClose.Click += btnCancel_Click;
 
-            CancelButton = btnCancel;
+            CancelButton = btnClose;
 
-            txtWord.Select();
-            txtWord.Focus();
+            txtInput.Select();
+            txtInput.Focus();
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -35,7 +34,7 @@ namespace MisterDoctor.Forms
             Hide();
         }
 
-        private void txtWord_KeyDown(object sender, KeyEventArgs e)
+        private void txtInput_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter) return;
             Check();
@@ -43,7 +42,7 @@ namespace MisterDoctor.Forms
 
         private void Check()
         {
-            var possibleVal = txtWord.Text.Trim();
+            var possibleVal = txtInput.Text.Trim();
             if (string.IsNullOrEmpty(possibleVal))
             {
                 Hide();

@@ -8,14 +8,14 @@ namespace MisterDoctor.Managers
     internal class NounManager
     {
         private bool _initialized;
-        private static NounManager Manager { get; } = new NounManager();
+        private static NounManager Manager { get; } = new();
 
         private NounManager()
         {
-            
+
         }
 
-        private readonly HashSet<string> _nouns = new HashSet<string>();
+        private readonly HashSet<string> _nouns = new();
 
         internal static void Initialize()
         {

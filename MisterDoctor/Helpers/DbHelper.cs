@@ -1,302 +1,164 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LiteDB;
 using MisterDoctor.Classes;
+using MisterDoctor.Plugins;
+using MisterDoctor.Plugins.Classes;
 
 namespace MisterDoctor.Helpers
 {
-    internal static class DbHelper
+    internal class DbHelper
     {
         private const string DbName = "Datastore.db";
 
-        private const string CollectionTokens = "tokens";
-        private const string CollectionSettings = "settings";
-        private const string CollectionWords = "words";
-        private const string CollectionIgnore = "ignore";
-        private const string CollectionSubstitution = "subs";
-        private const string CollectionCommands = "commands";
+        private const string CollectionApplication = "application";
 
-        public static Token TokenGet()
+        private const string CollectionPlugins = "plugins";
+
+        private const string CollectionStates = "pluginStates";
+
+        private const string CollectionIgnored = "ignored";
+
+        public static ConnectionSettings ReadConnectionSettings()
         {
-            using (var db = new LiteDatabase(DbName))
-            {
-                // Get Token Collection
+            using var db = new LiteDatabase(DbName);
 
-                var collection = db.GetCollection<Token>(CollectionTokens);
-                var tokens = collection.FindAll();
+            var collection = db.GetCollection<ConnectionDto>(CollectionApplication);
+            var settings = collection.FindAll();
 
-                return tokens.SingleOrDefault() ?? new Token();
-            }
+            var settingDto = settings.SingleOrDefault() ?? new ConnectionDto();
+
+            return settingDto.ToSetting();
         }
 
-        public static void TokenSet(Token token)
+        public static void SaveConnectionSettings(ConnectionSettings settings)
         {
-            using (var db = new LiteDatabase(DbName))
+            using var db = new LiteDatabase(DbName);
+
+            var collection = db.GetCollection<ConnectionDto>(CollectionApplication);
+            var dbSettings = collection.FindAll();
+
+            var origSetting = dbSettings.SingleOrDefault();
+
+            if (origSetting == null)
             {
-                // Get Token Collection
-
-                var collection = db.GetCollection<Token>(CollectionTokens);
-                var tokens = collection.FindAll();
-
-                var origToken = tokens.SingleOrDefault();
-
-                if (origToken == null)
+                var dto = new ConnectionDto(settings);
+                collection.Insert(dto);
+            }
+            else
+            {
+                var dto = new ConnectionDto(settings)
                 {
-                    collection.Insert(token);
-                }
-                else
-                {
-                    origToken.Username = token.Username;
-                    origToken.UserOAuthKey = token.UserOAuthKey;
-                    origToken.ClientId = token.ClientId;
-
-                    collection.Update(origToken);
-                }
+                    Id = origSetting.Id
+                };
+                collection.Update(dto);
             }
         }
 
-        public static AppSettings AppSettingsGet()
+        public static Settings ReadPluginSettings(Plugin plugin)
         {
-            using (var db = new LiteDatabase(DbName))
-            {
-                // Get Token Collection
-                var collection = db.GetCollection<AppSettings>(CollectionSettings);
-                var settings = collection.FindAll();
+            using var db = new LiteDatabase(DbName);
 
-                return settings.SingleOrDefault() ?? new AppSettings();
+            var collection = db.GetCollection<SettingsDto>(CollectionPlugins);
+            var allSettings = collection.FindAll();
+
+            var matchingSetting = allSettings.FirstOrDefault(i => i.Id == plugin.UniqueId);
+
+            var returnSettings = matchingSetting == null ? plugin.GetDefaultSettings() : matchingSetting.Settings;
+
+            returnSettings = plugin.CleanSettings(returnSettings);
+            returnSettings.TrimValues();
+
+            return returnSettings;
+        }
+
+        public static void SavePluginSettings(Plugin plugin, Settings pluginSettings)
+        {
+            using var db = new LiteDatabase(DbName);
+
+            pluginSettings.TrimValues();
+            pluginSettings = plugin.CleanSettings(pluginSettings);
+
+            var collection = db.GetCollection<SettingsDto>(CollectionPlugins);
+            var allSettings = collection.FindAll();
+
+            var matchingSetting = allSettings.FirstOrDefault(i => i.Id == plugin.UniqueId);
+
+            if (matchingSetting == null)
+            {
+                var newDto = new SettingsDto(plugin, pluginSettings);
+                collection.Insert(newDto);
+            }
+            else
+            {
+                matchingSetting.Settings = pluginSettings;
+                collection.Update(matchingSetting);
             }
         }
 
-        public static void AppSettingsSet(AppSettings appSetting)
+        public static PluginStates ReadPluginStates()
         {
-            using (var db = new LiteDatabase(DbName))
+            using var db = new LiteDatabase(DbName);
+
+            var collection = db.GetCollection<PluginState>(CollectionStates);
+            var allStates = collection.FindAll();
+
+            var returnStates = new PluginStates();
+
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var state in allStates.OrderBy(i => i.Sequence))
             {
-                // Get Token Collection
+                returnStates.Add(state);
+            }
 
-                var collection = db.GetCollection<AppSettings>(CollectionSettings);
-                var settings = collection.FindAll();
-                var origSetting = settings.SingleOrDefault();
+            return returnStates;
+        }
 
-                if (origSetting == null)
-                {
-                    collection.Insert(appSetting);
-                }
-                else
-                {
-                    origSetting.ChannelName = appSetting.ChannelName;
-                    origSetting.AutoConnect = appSetting.AutoConnect;
+        public static void SavePluginState(PluginStates pluginStates)
+        {
+            using var db = new LiteDatabase(DbName);
 
-                    origSetting.ProcChance = appSetting.ProcChance;
-                    origSetting.CoolDown = appSetting.CoolDown;
+            var collection = db.GetCollection<PluginState>(CollectionStates);
 
-                    origSetting.MaxMessageSize = appSetting.MaxMessageSize;
+            var onlyValidStates = pluginStates.Where(i => i.Id != Guid.Empty);
 
-                    origSetting.CommandIgnore = appSetting.CommandIgnore;
-                    origSetting.CommandUnignore = appSetting.CommandUnignore;
-
-                    origSetting.GoodBot = appSetting.GoodBot;
-                    origSetting.BadBot = appSetting.BadBot;
-
-                    collection.Update(origSetting);
-                }
+            foreach (var state in onlyValidStates)
+            {
+                collection.Upsert(state);
             }
         }
 
-        public static Word[] WordsGet()
+        public static List<IgnoredUser> GetIgnoredUsers()
         {
-            using (var db = new LiteDatabase(DbName))
-            {
-                if (!db.CollectionExists(CollectionWords)) return null;
+            using var db = new LiteDatabase(DbName);
 
-                var collection = db.GetCollection<Word>(CollectionWords);
-                return collection.FindAll().OrderBy(i => i.Value).ToArray();
+            var collection = db.GetCollection<IgnoredUser>(CollectionIgnored);
+
+            var allIgnored = collection.FindAll().ToList();
+
+            return allIgnored;
+        }
+
+        public static void SaveIgnoredUsers(IEnumerable<IgnoredUser> ignoreList)
+        {
+            using var db = new LiteDatabase(DbName);
+
+            var cleanList = new List<IgnoredUser>();
+            foreach(var ignoreItem in ignoreList)
+            {
+                ignoreItem.Username = ignoreItem.Username.Trim();
+                if (string.IsNullOrEmpty(ignoreItem.Username)) continue;
+                cleanList.Add(ignoreItem);
             }
-        }
 
-        public static void WordAdd(string word)
-        {
-            if (string.IsNullOrEmpty(word.Trim())) return;
+            var collection = db.GetCollection<IgnoredUser>(CollectionIgnored);
 
-            var objWord = new Word
+            collection.DeleteAll();
+
+            foreach (var user in cleanList)
             {
-                Value = word.Trim()
-            };
-            
-            using (var db = new LiteDatabase(DbName))
-            {
-                var collection = db.GetCollection<Word>(CollectionWords);
-                var existing = collection.Find(i => i.Value.Equals(word.Trim(), StringComparison.CurrentCultureIgnoreCase));
-                if (existing.Any()) return;
-
-                collection.Insert(objWord);
-            }
-        }
-
-        public static void WordDelete(Word word)
-        {
-            if (word == null) return;
-
-            using (var db = new LiteDatabase(DbName))
-            {
-                if (!db.CollectionExists(CollectionWords)) return;
-
-                var collection = db.GetCollection<Word>(CollectionWords);
-                collection.Delete(word.Id);
-            }
-        }
-
-        public static Word WordRandom()
-        {
-            var words = WordsGet();
-
-            if (words == null) return null;
-            if (words.Length == 0) return null;
-
-            var rnd = new Random();
-            var index = rnd.Next(words.Length);
-
-            return words[index];
-        }
-
-
-
-        public static User[] IgnoreGet()
-        {
-            using (var db = new LiteDatabase(DbName))
-            {
-                if (!db.CollectionExists(CollectionIgnore)) return null;
-
-                var collection = db.GetCollection<User>(CollectionIgnore);
-                return collection.FindAll().OrderBy(i => i.Username).ToArray();
-            }
-        }
-
-        public static void IgnoreAdd(string username)
-        {
-            var fixedLower = username.Trim().ToLower();
-            if (string.IsNullOrEmpty(fixedLower)) return;
-
-            var objWord = new User
-            {
-                Username = fixedLower
-            };
-
-            using (var db = new LiteDatabase(DbName))
-            {
-                var collection = db.GetCollection<User>(CollectionIgnore);
-                var existing = collection.Find(i => i.Username.Equals(fixedLower, StringComparison.CurrentCultureIgnoreCase));
-                if (existing.Any()) return;
-
-                collection.Insert(objWord);
-            }
-        }
-
-        public static void IgnoreDelete(string username)
-        {
-            if (username == null) return;
-            var fixedLower = username.ToLower().Trim();
-
-            using (var db = new LiteDatabase(DbName))
-            {
-                if (!db.CollectionExists(CollectionIgnore)) return;
-
-                var collection = db.GetCollection<User>(CollectionIgnore);
-
-                var existing = collection.Find(i => i.Username == fixedLower).ToArray();
-                if (existing.Length == 0) return;
-                var currentUser = existing.Single();
-
-                collection.Delete(currentUser.Id);
-            }
-        }
-
-        public static Substitution[] SubstitutionsGet()
-        {
-            using (var db = new LiteDatabase(DbName))
-            {
-                if (!db.CollectionExists(CollectionSubstitution)) return null;
-
-                var collection = db.GetCollection<Substitution>(CollectionSubstitution);
-                return collection.FindAll().OrderBy(i => i.Find).ToArray();
-            }
-        }
-
-        public static void SubstitutionAdd(string find, string reply)
-        {
-            if (string.IsNullOrEmpty(find.Trim())) return;
-            if (string.IsNullOrEmpty(reply.Trim())) return;
-
-            var sub = new Substitution
-            {
-                Find = find.ToLower().Trim(),
-                Reply = reply.Trim()
-            };
-
-            using (var db = new LiteDatabase(DbName))
-            {
-                var collection = db.GetCollection<Substitution>(CollectionSubstitution);
-                var existing = collection.Find(i => i.Find.Equals(find.Trim(), StringComparison.CurrentCultureIgnoreCase));
-                if (existing.Any()) return;
-
-                collection.Insert(sub);
-            }
-        }
-
-        public static void SubstitutionDelete(Substitution substitution)
-        {
-            if (substitution == null) return;
-
-            using (var db = new LiteDatabase(DbName))
-            {
-                if (!db.CollectionExists(CollectionSubstitution)) return;
-
-                var collection = db.GetCollection<Substitution>(CollectionSubstitution);
-                collection.Delete(substitution.Id);
-            }
-        }
-
-        public static Command[] CommandsGet()
-        {
-            using (var db = new LiteDatabase(DbName))
-            {
-                if (!db.CollectionExists(CollectionCommands)) return null;
-
-                var collection = db.GetCollection<Command>(CollectionCommands);
-                return collection.FindAll().OrderBy(i => i.Cmd).ToArray();
-            }
-        }
-
-        public static void CommandAdd(string cmd, string response)
-        {
-            var cleanCmd = cmd.Trim();
-            var cleanResponse = response.Trim();
-
-            if (string.IsNullOrEmpty(cleanCmd)) return;
-            if (string.IsNullOrEmpty(cleanResponse)) return;
-
-            var command = new Command
-            {
-                Cmd = cleanCmd.ToLower(),
-                Response = response
-            };
-
-            using (var db = new LiteDatabase(DbName))
-            {
-                var collection = db.GetCollection<Command>(CollectionCommands);
-                collection.Insert(command);
-            }
-        }
-
-        public static void CommandDelete(Command command)
-        {
-            if (command == null) return;
-
-            using (var db = new LiteDatabase(DbName))
-            {
-                if (!db.CollectionExists(CollectionCommands)) return;
-
-                var collection = db.GetCollection<Command>(CollectionCommands);
-                collection.Delete(command.Id);
+                collection.Upsert(user);
             }
         }
     }

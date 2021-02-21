@@ -1,4 +1,5 @@
-﻿namespace MisterDoctor.Forms
+﻿
+namespace MisterDoctor.Forms
 {
     partial class FormInput
     {
@@ -28,51 +29,47 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnCancel = new System.Windows.Forms.Button();
+            this.txtInput = new System.Windows.Forms.TextBox();
+            this.btnClose = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
-            this.txtWord = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // btnCancel
+            // txtInput
             // 
-            this.btnCancel.Location = new System.Drawing.Point(157, 38);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 2;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
+            this.txtInput.Location = new System.Drawing.Point(12, 12);
+            this.txtInput.Name = "txtInput";
+            this.txtInput.Size = new System.Drawing.Size(256, 23);
+            this.txtInput.TabIndex = 0;
+            // 
+            // btnClose
+            // 
+            this.btnClose.Location = new System.Drawing.Point(193, 41);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(75, 23);
+            this.btnClose.TabIndex = 1;
+            this.btnClose.Text = "Close";
+            this.btnClose.UseVisualStyleBackColor = true;
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(76, 38);
+            this.btnAdd.Location = new System.Drawing.Point(112, 41);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
-            this.btnAdd.TabIndex = 1;
+            this.btnAdd.TabIndex = 2;
             this.btnAdd.Text = "Add";
             this.btnAdd.UseVisualStyleBackColor = true;
             // 
-            // txtWord
-            // 
-            this.txtWord.Location = new System.Drawing.Point(12, 12);
-            this.txtWord.Name = "txtWord";
-            this.txtWord.Size = new System.Drawing.Size(220, 20);
-            this.txtWord.TabIndex = 0;
-            // 
             // FormInput
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(242, 69);
-            this.Controls.Add(this.btnCancel);
+            this.ClientSize = new System.Drawing.Size(280, 79);
             this.Controls.Add(this.btnAdd);
-            this.Controls.Add(this.txtWord);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
+            this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.txtInput);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "FormInput";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "FormInput";
-            this.Load += new System.EventHandler(this.FormAddWord_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -80,8 +77,8 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.TextBox txtInput;
+        private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnAdd;
-        private System.Windows.Forms.TextBox txtWord;
     }
 }
