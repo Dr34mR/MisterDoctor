@@ -2,7 +2,7 @@
 
 Mister Doctor is a modular twitch bot built to be extensible with each individual component able to accept a message and reply with a message where desired.
 
-Mister Doctor started off as a single bot (substitution) and grew to encompass other bot functionalities as they became desired.
+Mister Doctor started off as a single bot (substitution) and grew to encompass other bot functionalities / plugins / features as they became desired.
 
 ![Screenshot](FormMain.png?raw=true "Screenshot")
 
@@ -33,12 +33,9 @@ Things Mister Doctor does:
 
      - If a user writes 'botname' + a goodbot word (yes, goodbot, plz, nice) will respond with a custom message you define. 
 	 - If a user writes 'botname' + a badbot word (no, badbot, why, bad) will respond with a custom message you define.
-	 
-- **Settings.** Configurable ignore and unignore commands as well as max message words to ensure large messages are not spammed.
 
 [Download Page](https://github.com/Dr34mR/MisterDoctor/releases)
 
 ### Packages currently being used
 - TwitchLib.Client
 - LiteDb
-- Costura.Fody
