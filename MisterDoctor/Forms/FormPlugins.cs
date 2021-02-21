@@ -152,26 +152,26 @@ namespace MisterDoctor.Forms
             // SelectRow(guid);
         }
 
-        private void SelectRow(Guid guid)
-        { 
-            if (guid == Guid.Empty) return;
+        //private void SelectRow(Guid guid)
+        //{ 
+        //    if (guid == Guid.Empty) return;
 
-            foreach (var row in mainGrid.Rows.OfType<DataGridViewRow>())
-            {
-                row.Selected = false;
-            }
+        //    foreach (var row in mainGrid.Rows.OfType<DataGridViewRow>())
+        //    {
+        //        row.Selected = false;
+        //    }
 
-            var matchingRow = mainGrid.Rows
-                .OfType<DataGridViewRow>()
-                .FirstOrDefault(i => (Guid) i.Cells[nameof(Plugin.UniqueId)].Value == guid);
+        //    var matchingRow = mainGrid.Rows
+        //        .OfType<DataGridViewRow>()
+        //        .FirstOrDefault(i => (Guid) i.Cells[nameof(Plugin.UniqueId)].Value == guid);
 
-            if (matchingRow == null) return;
+        //    if (matchingRow == null) return;
 
-            matchingRow.Selected = true;
-            matchingRow.Cells[nameof(Plugin.Name)].Selected = true;
+        //    matchingRow.Selected = true;
+        //    matchingRow.Cells[nameof(Plugin.Name)].Selected = true;
 
-            SetButtonStates();
-        }
+        //    SetButtonStates();
+        //}
 
         private void btnClose_Click(object sender, EventArgs e)
         {
