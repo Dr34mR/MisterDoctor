@@ -526,13 +526,14 @@ namespace MisterDoctor.Forms
                 channelRequest.AddHeader("Accept", "application/vnd.twitchtv.v5+json");
                 channelRequest.AddHeader("Client-ID", id);
 
-                var channelResponse = client.Get(channelRequest);
-
-                var crObj = JObject.Parse(channelResponse.Content);
-                if (!crObj.ContainsKey("_total")) return false;
-                if (crObj["_total"]?.ToObject<int>() != 1) return false;
-
-                _channelId = ((JArray) crObj.GetValue("users"))?.First()["_id"]?.ToString() ?? string.Empty;
+                var channelResponse = client.GetAsync(channelRequest).Result;
+                if (channelResponse.Content != null)
+                {
+                    var crObj = JObject.Parse(channelResponse.Content);
+                    if (!crObj.ContainsKey("_total")) return false;
+                    if (crObj["_total"]?.ToObject<int>() != 1) return false;
+                    _channelId = ((JArray)crObj.GetValue("users"))?.First()["_id"]?.ToString() ?? string.Empty;
+                }
             }
 
             if (string.IsNullOrEmpty(_channelId))
@@ -546,12 +547,16 @@ namespace MisterDoctor.Forms
             userRequest.AddHeader("Accept", "application/vnd.twitchtv.v5+json");
             userRequest.AddHeader("Client-ID", id);
 
-            var userResponse = client.Get(userRequest);
+            var userResponse = client.GetAsync(userRequest).Result;
+            var userId = string.Empty;
 
-            var urObj = JObject.Parse(userResponse.Content);
-            if (!urObj.ContainsKey("_total")) return false;
-            if (urObj["_total"]?.ToObject<int>() != 1) return false;
-            var userId = ((JArray)urObj.GetValue("users"))?.First()["_id"]?.ToString() ?? string.Empty;
+            if (userResponse.Content != null)
+            {
+                var urObj = JObject.Parse(userResponse.Content);
+                if (!urObj.ContainsKey("_total")) return false;
+                if (urObj["_total"]?.ToObject<int>() != 1) return false;
+                userId = ((JArray)urObj.GetValue("users"))?.First()["_id"]?.ToString() ?? string.Empty;
+            }
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -564,8 +569,7 @@ namespace MisterDoctor.Forms
             followRequest.AddHeader("Accept", "application/vnd.twitchtv.v5+json");
             followRequest.AddHeader("Client-ID", id);
 
-            var followResponse = client.Get(followRequest);
-
+            var followResponse = client.GetAsync(followRequest).Result;
             var statusCode = followResponse.StatusCode;
 
             return statusCode == HttpStatusCode.OK;

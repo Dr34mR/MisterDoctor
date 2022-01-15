@@ -13,9 +13,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LiteDB" Version="5.0.10" />
-    <PackageReference Include="RestSharp" Version="106.11.7" />
-    <PackageReference Include="TwitchLib" Version="3.2.0" />
+    <Compile Remove="Interfaces\**" />
+    <EmbeddedResource Remove="Interfaces\**" />
+    <None Remove="Interfaces\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LiteDB" Version="5.0.11" />
+    <PackageReference Include="RestSharp" Version="107.0.3" />
+    <PackageReference Include="TwitchLib" Version="3.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,7 +51,6 @@
 
   <ItemGroup>
     <Folder Include="Dependancies\" />
-    <Folder Include="Interfaces\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
