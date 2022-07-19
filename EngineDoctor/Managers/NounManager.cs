@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-namespace MisterDoctor.Managers
+﻿namespace EngineDoctor.Managers
 {
-    internal class NounManager
+    public class NounManager
     {
         private bool _initialized;
         private static NounManager Manager { get; } = new();
@@ -17,7 +12,7 @@ namespace MisterDoctor.Managers
 
         private readonly HashSet<string> _nouns = new();
 
-        internal static void Initialize()
+        public static void Initialize()
         {
             if (Manager._initialized) return;
 
@@ -41,7 +36,7 @@ namespace MisterDoctor.Managers
             Manager._initialized = true;
         }
 
-        internal static bool IsNoun(string word)
+        public static bool IsNoun(string word)
         {
             var modded = word.ToLower().Trim();
             return !string.IsNullOrEmpty(modded) && Manager._nouns.Contains(modded);

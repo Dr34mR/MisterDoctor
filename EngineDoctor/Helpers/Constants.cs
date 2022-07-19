@@ -1,4 +1,4 @@
-﻿namespace MisterDoctor
+﻿namespace EngineDoctor.Helpers
 {
     public static class Constants
     {

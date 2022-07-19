@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Resources\favicon.ico</ApplicationIcon>
     <Product>Mister Doctor</Product>
@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EngineDoctor\EngineDoctor.csproj" />
     <ProjectReference Include="..\MisterDoctor.Plugins\MisterDoctor.Plugins.csproj" />
   </ItemGroup>
 
@@ -50,11 +51,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Dependancies" />
     <Folder Include="Dependancies\" />
+    <Folder Include="Extensions" />
+    <Folder Include="Managers" />
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy $(ProjectDir)Dependancies\nounlist.txt $(TargetDir)" />
-  </Target>
 
 </Project>

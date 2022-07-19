@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Windows.Forms;
+using EngineDoctor.Helpers;
 using MisterDoctor.Helpers;
 using MisterDoctor.Plugins;
 using MisterDoctor.Plugins.Classes;

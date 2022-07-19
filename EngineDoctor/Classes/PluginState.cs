@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MisterDoctor.Classes
+﻿namespace EngineDoctor.Classes
 {
     public class PluginState
     {

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using EngineDoctor.Classes;
 using LiteDB;
-using MisterDoctor.Classes;
 using MisterDoctor.Plugins;
 using MisterDoctor.Plugins.Classes;
 
-namespace MisterDoctor.Helpers
+namespace EngineDoctor.Helpers
 {
-    internal class DbHelper
+    public class DbHelper
     {
         private const string DbName = "Datastore.db";
 
@@ -27,7 +24,7 @@ namespace MisterDoctor.Helpers
             var collection = db.GetCollection<ConnectionDto>(CollectionApplication);
             var settings = collection.FindAll();
 
-            var settingDto = settings.SingleOrDefault() ?? new ConnectionDto();
+            var settingDto = Enumerable.SingleOrDefault<ConnectionDto>(settings) ?? new ConnectionDto();
 
             return settingDto.ToSetting();
         }
@@ -39,7 +36,7 @@ namespace MisterDoctor.Helpers
             var collection = db.GetCollection<ConnectionDto>(CollectionApplication);
             var dbSettings = collection.FindAll();
 
-            var origSetting = dbSettings.SingleOrDefault();
+            var origSetting = Enumerable.SingleOrDefault<ConnectionDto>(dbSettings);
 
             if (origSetting == null)
             {
@@ -63,7 +60,7 @@ namespace MisterDoctor.Helpers
             var collection = db.GetCollection<SettingsDto>(CollectionPlugins);
             var allSettings = collection.FindAll();
 
-            var matchingSetting = allSettings.FirstOrDefault(i => i.Id == plugin.UniqueId);
+            var matchingSetting = Enumerable.FirstOrDefault<SettingsDto>(allSettings, i => i.Id == plugin.UniqueId);
 
             var returnSettings = matchingSetting == null ? plugin.GetDefaultSettings() : matchingSetting.Settings;
 
@@ -83,7 +80,7 @@ namespace MisterDoctor.Helpers
             var collection = db.GetCollection<SettingsDto>(CollectionPlugins);
             var allSettings = collection.FindAll();
 
-            var matchingSetting = allSettings.FirstOrDefault(i => i.Id == plugin.UniqueId);
+            var matchingSetting = Enumerable.FirstOrDefault<SettingsDto>(allSettings, i => i.Id == plugin.UniqueId);
 
             if (matchingSetting == null)
             {
@@ -107,7 +104,7 @@ namespace MisterDoctor.Helpers
             var returnStates = new PluginStates();
 
             // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var state in allStates.OrderBy(i => i.Sequence))
+            foreach (var state in Enumerable.OrderBy<PluginState, int>(allStates, i => i.Sequence))
             {
                 returnStates.Add(state);
             }
@@ -135,7 +132,7 @@ namespace MisterDoctor.Helpers
 
             var collection = db.GetCollection<IgnoredUser>(CollectionIgnored);
 
-            var allIgnored = collection.FindAll().ToList();
+            var allIgnored = Enumerable.ToList<IgnoredUser>(collection.FindAll());
 
             return allIgnored;
         }

@@ -2,9 +2,9 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using MisterDoctor.Classes;
-using MisterDoctor.Helpers;
-using MisterDoctor.Managers;
+using EngineDoctor.Classes;
+using EngineDoctor.Helpers;
+using EngineDoctor.Managers;
 using MisterDoctor.Plugins;
 using MisterDoctor.Properties;
 

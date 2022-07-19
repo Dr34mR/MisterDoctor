@@ -1,6 +1,6 @@
-﻿namespace MisterDoctor.Classes
+﻿namespace EngineDoctor.Classes
 {
-    internal class ConnectionDto : ConnectionSettings
+    public class ConnectionDto : ConnectionSettings
     {
         public int Id { get; set; }
 

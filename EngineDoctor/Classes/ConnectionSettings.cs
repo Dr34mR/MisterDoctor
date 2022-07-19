@@ -1,4 +1,4 @@
-﻿namespace MisterDoctor.Classes
+﻿namespace EngineDoctor.Classes
 {
     public class ConnectionSettings
     { 

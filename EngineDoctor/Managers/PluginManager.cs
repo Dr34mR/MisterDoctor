@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.IO;
-using System.Linq;
-using MisterDoctor.Classes;
-using MisterDoctor.Helpers;
+using EngineDoctor.Classes;
+using EngineDoctor.Helpers;
 using MisterDoctor.Plugins;
 using MisterDoctor.Plugins.Classes;
 
-namespace MisterDoctor.Managers
+namespace EngineDoctor.Managers
 {
-    internal class PluginManager
+    public class PluginManager
     {
         [ImportMany(typeof(Plugin))]
-        internal List<Plugin> Plugins { get; private set; } = new();
+        public List<Plugin> Plugins { get; private set; } = new();
 
-        internal static List<Plugin> LoadedPlugins
+        public static List<Plugin> LoadedPlugins
         {
             get
             {

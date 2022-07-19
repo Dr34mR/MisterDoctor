@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using MisterDoctor.Plugins;
+﻿using MisterDoctor.Plugins;
 using MisterDoctor.Plugins.Classes;
 
-namespace MisterDoctor.Extensions
+namespace EngineDoctor.Extensions
 {
     public static class MessageExtensions
     {

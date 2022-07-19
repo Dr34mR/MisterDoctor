@@ -1,8 +1,7 @@
-﻿using System;
-using MisterDoctor.Plugins;
+﻿using MisterDoctor.Plugins;
 using MisterDoctor.Plugins.Classes;
 
-namespace MisterDoctor.Classes
+namespace EngineDoctor.Classes
 {
     public class SettingsDto
     {

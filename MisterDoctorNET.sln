@@ -25,6 +25,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugin.Commands", "Plugin.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.Markov", "Plugin.Markov\Plugin.Markov.csproj", "{75B084F3-612F-4AB4-A60B-2EE1C5AB2E28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineDoctor", "EngineDoctor\EngineDoctor.csproj", "{08CE7699-48A8-443F-A8BE-6520E7769B38}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaMisterDoctor", "AvaloniaMisterDoctor\AvaloniaMisterDoctor.csproj", "{E2AFCE7F-A53C-411E-A4EE-D7F03FD94968}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +75,14 @@ Global
 		{75B084F3-612F-4AB4-A60B-2EE1C5AB2E28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75B084F3-612F-4AB4-A60B-2EE1C5AB2E28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75B084F3-612F-4AB4-A60B-2EE1C5AB2E28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08CE7699-48A8-443F-A8BE-6520E7769B38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08CE7699-48A8-443F-A8BE-6520E7769B38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08CE7699-48A8-443F-A8BE-6520E7769B38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08CE7699-48A8-443F-A8BE-6520E7769B38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2AFCE7F-A53C-411E-A4EE-D7F03FD94968}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2AFCE7F-A53C-411E-A4EE-D7F03FD94968}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2AFCE7F-A53C-411E-A4EE-D7F03FD94968}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2AFCE7F-A53C-411E-A4EE-D7F03FD94968}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
