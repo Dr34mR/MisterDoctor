@@ -1,12 +1,10 @@
-﻿using System.Diagnostics;
-using System.Drawing;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Net;
-using System.Net.Mime;
 using EngineDoctor.Classes;
 using EngineDoctor.Extensions;
 using EngineDoctor.Helpers;
 using EngineDoctor.Managers;
-using Microsoft.VisualBasic;
 using MisterDoctor.Plugins;
 using MisterDoctor.Plugins.Classes;
 using MisterDoctor.Plugins.Enums;
@@ -40,7 +38,27 @@ public static class Engine
     public static string BotUsername { get; private set; }
     public static string ChannelName { get; private set; }
 
-    public static List<string> Messages { get; } = new();
+    public static BindingList<string> Messages { get; } = new();
+    public static BindingList<string> ErrorMessages { get; } = new();
+
+    public static List<Plugin> LoadedPlugins { get; } = PluginManager.LoadedPlugins;
+
+    public static bool IsConnected
+    {
+        get
+        {
+            var connected = false;
+            lock (_threadlock)
+            {
+                if (_twitchClient != null && _twitchClient.IsConnected)
+                {
+                    connected = true;
+                }
+            }
+
+            return connected;
+        }
+    }
     
     public static void Setup(ConnectionSettings connectionSettings)
     {
@@ -63,10 +81,17 @@ public static class Engine
         BotClientId = connectionSettings.BotClientId;
         BotUsername = connectionSettings.BotUsername;
         BotOAuthKey = connectionSettings.BotOAuthKey;
+        
+        DbHelper.SaveConnectionSettings(connectionSettings);
     }
     
     public static void Connect()
     {
+        if (_twitchClient != null && _twitchClient.IsConnected)
+        {
+            Disconnect();
+        }
+        
         var channel = ChannelName;
         if (string.IsNullOrEmpty(channel))
         {
@@ -455,6 +480,6 @@ public static class Engine
 
     private static void ShowError(string message)
     {
-        Messages.Add(message);
+        ErrorMessages.Add(message);
     }
 }

@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="using:FluentAvalonia.UI.Controls"
+        xmlns:views="using:AvaloniaMisterDoctor.Views"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AvaloniaMisterDoctor.Views.MainWindow"
+        Title="AvaloniaMisterDoctor">
+    <Panel>
+        <ui:NavigationView Name="NavView" 
+                           ItemInvoked="NavView_OnItemInvoked" 
+                           SelectionChanged="NavView_OnSelectionChanged"
+                           AttachedToVisualTree="NavView_OnAttachedToVisualTree"
+                           AlwaysShowHeader="False"
+                           PaneDisplayMode="Left"
+                           IsBackEnabled="{Binding #ContentFrame.CanGoBack}"
+                           >
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Icon="Home" Content="Home" Tag="HomeView" />
+                <ui:NavigationViewItem Icon="TV" Content="Channel" Tag="ChannelView" />
+                <ui:NavigationViewItem Icon="Attach" Content="Plugins" Tag="PluginsView" />
+            </ui:NavigationView.MenuItems>
+        
+            <ui:Frame Name="ContentFrame" NavigationFailed="ContentFrame_OnNavigationFailed" >
+        
+            </ui:Frame>
+        </ui:NavigationView>
+        <!-- <views:MainView /> -->
+    </Panel>
+
+</Window>

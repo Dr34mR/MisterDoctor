@@ -1,0 +1,25 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="using:FluentAvalonia.UI.Controls"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AvaloniaMisterDoctor.Views.HomeView">
+    <StackPanel>
+        <TextBlock Text="This is the landing page for the bot! Configure your credentials if not setup."
+                   HorizontalAlignment="Left" VerticalAlignment="Center" />
+
+        <Button Margin="5" Click="BtnConfigureCredentials_OnClick">
+            <WrapPanel>
+                <TextBlock Text="Configure Credentials" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <!-- <material:MaterialIcon Kind="Login"></material:MaterialIcon> -->
+            </WrapPanel>
+        </Button>
+        <Button Name="BtnBotStart" Margin="5" Click="BtnBotStart_OnClick">
+            <WrapPanel>
+                <TextBlock Text="Start Bot" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <!-- <material:MaterialIcon Kind="Login"></material:MaterialIcon> -->
+            </WrapPanel>
+        </Button>
+    </StackPanel>
+</UserControl>
